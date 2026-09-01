@@ -155,7 +155,16 @@
     font-size:14px;
     text-align:center;
     font-family:var(--sans);
+    line-height:1.5;
   }
+  .opt-btn .mode-sub{
+    display:block;
+    font-size:11px;
+    font-weight:400;
+    color:var(--ink-soft);
+    margin-top:2px;
+  }
+  .opt-btn.selected .mode-sub{color:#D8E2F0;}
   .opt-btn.selected{
     background:var(--navy);
     border-color:var(--navy);
@@ -218,7 +227,15 @@
     display:flex;
     align-items:center;
     justify-content:space-between;
+    gap:10px;
     margin-bottom:20px;
+    flex-wrap:wrap;
+  }
+  .exam-timer{
+    font-size:12px;
+    color:var(--navy);
+    font-variant-numeric:tabular-nums;
+    font-weight:700;
   }
   .quit-btn{
     background:none;
@@ -292,6 +309,11 @@
     border-color:var(--fail);
   }
   .choice.wrong .mark{background:var(--fail); border-color:var(--fail); color:#fff;}
+  .choice.chosen-neutral{
+    background:#EEF1F6;
+    border-color:var(--navy);
+  }
+  .choice.chosen-neutral .mark{background:var(--navy); border-color:var(--navy); color:#fff;}
   .choice.dim{opacity:.55;}
 
   .feedback{
@@ -562,6 +584,14 @@
       </div>
     </div>
 
+    <div class="panel">
+      <h2>モード</h2>
+      <div class="row" id="modeRow">
+        <button class="opt-btn selected" data-mode="practice">練習モード<br><span class="mode-sub">1問ごとに解説を見る</span></button>
+        <button class="opt-btn" data-mode="exam">模擬テスト<br><span class="mode-sub">最後にまとめて採点</span></button>
+      </div>
+    </div>
+
     <button class="start-btn" id="startBtn">この条件で開始する</button>
     <p class="hint" id="poolHint"></p>
     <button class="gallery-link" id="galleryLink">📊 QC七つ道具 図解ギャラリーを見る（オリジナル作図）</button>
@@ -581,7 +611,8 @@
       <div class="progress-label" id="progressLabel">1 / 30</div>
     </div>
     <div class="quiz-top-row">
-      <div class="score-live">正解 <b id="liveScore">0</b> 問</div>
+      <div class="score-live" id="scoreLiveWrap">正解 <b id="liveScore">0</b> 問</div>
+      <div class="exam-timer" id="examTimer" style="display:none;">⏱ <span id="timerText">00:00</span></div>
       <button class="quit-btn" id="quitBtn">途中でやめる</button>
     </div>
 
@@ -644,12 +675,15 @@ const ALL_QUESTIONS = [{"category": "品質管理", "question": "品質の定義
 let selectedCats = new Set(); // empty = all
 let selectedCount = 30;
 let selectedOrder = 'random';
+let selectedMode = 'practice'; // 'practice' | 'exam'
 
 let quizQueue = [];
 let currentIndex = 0;
 let liveScoreCount = 0;
 let answers = []; // {q, chosen, correct}
 let missedQueue = [];
+let examTimerInterval = null;
+let examStartTime = null;
 
 const categories = [...new Set(ALL_QUESTIONS.map(q=>q.category))];
 
@@ -729,6 +763,14 @@ document.getElementById('orderRow').addEventListener('click', (e)=>{
   selectedOrder = btn.dataset.order;
 });
 
+document.getElementById('modeRow').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.opt-btn');
+  if(!btn) return;
+  document.querySelectorAll('#modeRow .opt-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedMode = btn.dataset.mode;
+});
+
 document.getElementById('startBtn').addEventListener('click', ()=>{
   const pool = currentPool();
   if(pool.length===0) return;
@@ -739,8 +781,37 @@ document.getElementById('startBtn').addEventListener('click', ()=>{
   liveScoreCount = 0;
   answers = [];
   showScreen('quiz');
+
+  const timerEl = document.getElementById('examTimer');
+  const scoreEl = document.getElementById('scoreLiveWrap');
+  if(selectedMode === 'exam'){
+    timerEl.style.display = 'block';
+    scoreEl.style.display = 'none';
+    startExamTimer();
+  } else {
+    timerEl.style.display = 'none';
+    scoreEl.style.display = 'block';
+    stopExamTimer();
+  }
+
   renderQuestion();
 });
+
+function startExamTimer(){
+  stopExamTimer();
+  examStartTime = Date.now();
+  updateTimerDisplay();
+  examTimerInterval = setInterval(updateTimerDisplay, 1000);
+}
+function stopExamTimer(){
+  if(examTimerInterval){ clearInterval(examTimerInterval); examTimerInterval = null; }
+}
+function updateTimerDisplay(){
+  const sec = Math.floor((Date.now()-examStartTime)/1000);
+  const m = String(Math.floor(sec/60)).padStart(2,'0');
+  const s = String(sec%60).padStart(2,'0');
+  document.getElementById('timerText').textContent = `${m}:${s}`;
+}
 
 function showScreen(name){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -779,6 +850,21 @@ function selectChoice(idx){
   choiceEls.forEach(el=>el.classList.add('locked'));
 
   const isCorrect = idx === q.correct;
+  answers.push({ q, chosen: idx, correct: isCorrect });
+
+  const nextBtn = document.getElementById('nextBtn');
+  const isLast = (currentIndex === quizQueue.length-1);
+
+  if(selectedMode === 'exam'){
+    // Exam mode: no immediate right/wrong reveal — just mark the chosen option neutrally.
+    choiceEls[idx].classList.add('chosen-neutral');
+    choiceEls.forEach((el,i)=>{ if(i!==idx) el.classList.add('dim'); });
+    nextBtn.style.display = 'block';
+    nextBtn.textContent = isLast ? '解答を終えて採点する' : '次の問題へ';
+    return;
+  }
+
+  // Practice mode: immediate feedback
   choiceEls[q.correct].classList.add('correct');
   if(!isCorrect){
     choiceEls[idx].classList.add('wrong');
@@ -790,8 +876,6 @@ function selectChoice(idx){
   if(isCorrect) liveScoreCount++;
   document.getElementById('liveScore').textContent = liveScoreCount;
 
-  answers.push({ q, chosen: idx, correct: isCorrect });
-
   const fb = document.getElementById('feedback');
   const verdict = document.getElementById('verdict');
   verdict.textContent = isCorrect ? '正解です' : '不正解';
@@ -799,15 +883,19 @@ function selectChoice(idx){
   document.getElementById('expText').textContent = q.explanation;
   fb.classList.add('show');
 
-  const nextBtn = document.getElementById('nextBtn');
   nextBtn.style.display = 'block';
-  nextBtn.textContent = (currentIndex === quizQueue.length-1) ? '結果を見る' : '次の問題へ';
+  nextBtn.textContent = isLast ? '結果を見る' : '次の問題へ';
 }
 
 document.getElementById('nextBtn').addEventListener('click', ()=>{
   currentIndex++;
   if(currentIndex >= quizQueue.length){
     document.getElementById('progressFill').style.width = '100%';
+    stopExamTimer();
+    if(selectedMode === 'exam'){
+      // compute live score now, at grading time
+      liveScoreCount = answers.filter(a=>a.correct).length;
+    }
     showResult();
   } else {
     renderQuestion();
@@ -819,6 +907,7 @@ document.getElementById('quitBtn').addEventListener('click', ()=>{
     ? '演習を中断してトップ画面に戻りますか？'
     : `ここまで${answers.length}問に解答しています。中断してトップ画面に戻りますか？（この演習の記録は残りません）`;
   showConfirmModal(msg, ()=>{
+    stopExamTimer();
     quizQueue = [];
     currentIndex = 0;
     liveScoreCount = 0;
@@ -856,7 +945,8 @@ function showResult(){
   const pct = Math.round((correct/total)*100);
 
   document.getElementById('resultScore').innerHTML = `${correct}<span>/${total}</span>`;
-  document.getElementById('resultPct').textContent = `正答率 ${pct}%`;
+  const modeLabel = selectedMode === 'exam' ? '模擬テスト結果 ・ ' : '';
+  document.getElementById('resultPct').textContent = `${modeLabel}正答率 ${pct}%`;
 
   let msg;
   if(pct >= 90) msg = 'お見事です。この調子で他の分野にも挑戦してみましょう。';
@@ -918,6 +1008,10 @@ function showResult(){
 }
 
 document.getElementById('retryMissedBtn').addEventListener('click', ()=>{
+  selectedMode = 'practice'; // review always shows explanations
+  document.getElementById('examTimer').style.display = 'none';
+  document.getElementById('scoreLiveWrap').style.display = 'block';
+  stopExamTimer();
   quizQueue = shuffle(missedQueue);
   currentIndex = 0;
   liveScoreCount = 0;
@@ -927,6 +1021,7 @@ document.getElementById('retryMissedBtn').addEventListener('click', ()=>{
 });
 
 document.getElementById('restartBtn').addEventListener('click', ()=>{
+  stopExamTimer();
   showScreen('start');
 });
 
