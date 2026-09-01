@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QC検定4級 問題集 - 200問チャレンジ</title>
+<style>
+  :root{
+    --paper:#F5F3EC;
+    --paper-line:#E4E0D3;
+    --ink:#23262B;
+    --ink-soft:#5B5F66;
+    --navy:#28466E;
+    --navy-deep:#1B2F4B;
+    --pass:#2D6A4F;
+    --pass-bg:#E4EFE8;
+    --fail:#A63A2E;
+    --fail-bg:#F5E7E3;
+    --gold:#B08D2B;
+    --radius:4px;
+    --serif: "Shippori Mincho", "Noto Serif JP", "Hiragino Mincho ProN", serif;
+    --sans: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:var(--sans);
+    color:var(--ink);
+    background:
+      linear-gradient(var(--paper-line) 1px, transparent 1px) 0 0/100% 28px,
+      linear-gradient(90deg, var(--paper-line) 1px, transparent 1px) 0 0/28px 100%,
+      var(--paper);
+    background-attachment: fixed;
+    min-height:100vh;
+    line-height:1.6;
+  }
+  .wrap{
+    max-width:720px;
+    margin:0 auto;
+    padding:28px 20px 80px;
+  }
+  header.top{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:10px;
+    margin-bottom:28px;
+  }
+  header.top .tag{
+    font-size:12px;
+    letter-spacing:.04em;
+    color:var(--ink-soft);
+    font-variant-numeric:tabular-nums;
+  }
+  h1.brand{
+    font-family:var(--serif);
+    font-size:22px;
+    font-weight:700;
+    margin:0;
+    letter-spacing:.02em;
+  }
+  h1.brand small{
+    display:block;
+    font-family:var(--sans);
+    font-size:12px;
+    font-weight:500;
+    color:var(--navy);
+    margin-top:2px;
+    letter-spacing:.06em;
+  }
+
+  /* ---- screens ---- */
+  .screen{display:none;}
+  .screen.active{display:block;}
+
+  /* ---- start screen ---- */
+  .lede{
+    font-family:var(--serif);
+    font-size:19px;
+    line-height:1.9;
+    margin:0 0 30px;
+    color:var(--ink);
+  }
+  .lede .num{
+    font-size:34px;
+    font-weight:700;
+    color:var(--navy);
+    font-family:var(--serif);
+  }
+
+  .panel{
+    background:#FFFFFF;
+    border:1px solid var(--paper-line);
+    border-radius:var(--radius);
+    padding:22px 22px 20px;
+    margin-bottom:18px;
+  }
+  .panel h2{
+    font-size:13px;
+    font-weight:700;
+    margin:0 0 14px;
+    color:var(--navy-deep);
+    letter-spacing:.02em;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .panel h2::before{
+    content:"";
+    width:14px;height:14px;
+    border:2px solid var(--navy);
+    display:inline-block;
+    border-radius:2px;
+  }
+
+  .chip-grid{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+  .chip{
+    border:1px solid var(--ink-soft);
+    background:#fff;
+    color:var(--ink);
+    padding:7px 13px;
+    border-radius:16px;
+    font-size:13px;
+    cursor:pointer;
+    user-select:none;
+    transition:background .12s, color .12s, border-color .12s;
+    font-family:var(--sans);
+  }
+  .chip .count{color:var(--ink-soft); font-size:11px;}
+  .chip.selected{
+    background:var(--navy);
+    border-color:var(--navy);
+    color:#fff;
+  }
+  .chip.selected .count{color:#cfe0f5;}
+  .chip.all{font-weight:700;}
+
+  .row{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .opt-btn{
+    flex:1 1 70px;
+    border:1px solid var(--ink-soft);
+    background:#fff;
+    padding:10px 8px;
+    border-radius:var(--radius);
+    cursor:pointer;
+    font-size:14px;
+    text-align:center;
+    font-family:var(--sans);
+  }
+  .opt-btn.selected{
+    background:var(--navy);
+    border-color:var(--navy);
+    color:#fff;
+    font-weight:700;
+  }
+
+  .start-btn{
+    display:block;
+    width:100%;
+    padding:16px;
+    margin-top:6px;
+    background:var(--navy);
+    color:#fff;
+    border:none;
+    border-radius:var(--radius);
+    font-size:16px;
+    font-weight:700;
+    letter-spacing:.04em;
+    cursor:pointer;
+    font-family:var(--sans);
+  }
+  .start-btn:active{background:var(--navy-deep);}
+  .start-btn:disabled{background:#B9BEC6; cursor:not-allowed;}
+
+  .hint{font-size:12px;color:var(--ink-soft);margin-top:8px;}
+
+  /* ---- quiz screen ---- */
+  .progress-row{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:6px;
+  }
+  .progress-track{
+    flex:1;
+    height:6px;
+    background:var(--paper-line);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--navy);
+    width:0%;
+    transition:width .25s;
+  }
+  .progress-label{
+    font-size:12px;
+    color:var(--ink-soft);
+    font-variant-numeric:tabular-nums;
+    white-space:nowrap;
+  }
+  .score-live{
+    font-size:12px;
+    color:var(--ink-soft);
+  }
+  .score-live b{color:var(--pass);}
+  .quiz-top-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:20px;
+  }
+  .quit-btn{
+    background:none;
+    border:1px solid #C9A0A0;
+    color:var(--fail);
+    font-size:12px;
+    padding:6px 12px;
+    border-radius:14px;
+    cursor:pointer;
+    font-family:var(--sans);
+  }
+  .quit-btn:hover{background:var(--fail-bg);}
+
+  .qcard{
+    background:#fff;
+    border:1px solid var(--paper-line);
+    border-radius:var(--radius);
+    padding:26px 24px;
+  }
+  .qcat{
+    display:inline-block;
+    font-size:11px;
+    color:var(--navy);
+    border:1px solid var(--navy);
+    padding:2px 9px;
+    border-radius:11px;
+    margin-bottom:14px;
+    font-weight:700;
+  }
+  .qtext{
+    font-family:var(--serif);
+    font-size:19px;
+    line-height:1.75;
+    margin:0 0 22px;
+    color:var(--ink);
+  }
+  .choices{display:flex; flex-direction:column; gap:10px;}
+  .choice{
+    text-align:left;
+    padding:14px 16px;
+    border:1.5px solid #D8D4C6;
+    border-radius:var(--radius);
+    background:#fff;
+    font-size:15px;
+    cursor:pointer;
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+    font-family:var(--sans);
+    color:var(--ink);
+  }
+  .choice .mark{
+    flex:0 0 auto;
+    width:22px;height:22px;
+    border:1.5px solid #9A968A;
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:11px;
+    color:var(--ink-soft);
+    font-weight:700;
+  }
+  .choice:hover:not(.locked){border-color:var(--navy);}
+  .choice.locked{cursor:default;}
+  .choice.correct{
+    background:var(--pass-bg);
+    border-color:var(--pass);
+  }
+  .choice.correct .mark{background:var(--pass); border-color:var(--pass); color:#fff;}
+  .choice.wrong{
+    background:var(--fail-bg);
+    border-color:var(--fail);
+  }
+  .choice.wrong .mark{background:var(--fail); border-color:var(--fail); color:#fff;}
+  .choice.dim{opacity:.55;}
+
+  .feedback{
+    margin-top:20px;
+    padding-top:18px;
+    border-top:1px dashed #D8D4C6;
+    display:none;
+  }
+  .feedback.show{display:block;}
+  .feedback .verdict{
+    font-weight:700;
+    font-size:14px;
+    margin-bottom:8px;
+  }
+  .feedback .verdict.ok{color:var(--pass);}
+  .feedback .verdict.ng{color:var(--fail);}
+  .feedback .exp{
+    font-size:14px;
+    color:var(--ink-soft);
+    line-height:1.8;
+  }
+  .next-btn{
+    margin-top:20px;
+    width:100%;
+    padding:14px;
+    background:var(--ink);
+    color:#fff;
+    border:none;
+    border-radius:var(--radius);
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    font-family:var(--sans);
+  }
+
+  /* ---- result screen ---- */
+  .result-hero{
+    text-align:center;
+    padding:34px 20px;
+    background:#fff;
+    border:1px solid var(--paper-line);
+    border-radius:var(--radius);
+    margin-bottom:22px;
+  }
+  .result-score{
+    font-family:var(--serif);
+    font-size:56px;
+    font-weight:700;
+    color:var(--navy);
+    line-height:1;
+  }
+  .result-score span{font-size:22px; color:var(--ink-soft); font-family:var(--sans); font-weight:500;}
+  .result-sub{margin-top:10px; font-size:14px; color:var(--ink-soft);}
+  .result-msg{
+    margin-top:16px;
+    font-family:var(--serif);
+    font-size:16px;
+    color:var(--ink);
+  }
+
+  .cat-breakdown{margin-bottom:22px;}
+  .cat-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:8px 0;
+    border-bottom:1px solid var(--paper-line);
+    font-size:13px;
+  }
+  .cat-row .name{flex:0 0 120px; color:var(--ink);}
+  .cat-row .bar-track{flex:1; height:8px; background:var(--paper-line); border-radius:4px; overflow:hidden;}
+  .cat-row .bar-fill{height:100%; background:var(--navy);}
+  .cat-row .frac{flex:0 0 46px; text-align:right; color:var(--ink-soft); font-variant-numeric:tabular-nums;}
+
+  .review-item{
+    background:#fff;
+    border:1px solid var(--paper-line);
+    border-left:4px solid var(--fail);
+    border-radius:var(--radius);
+    padding:16px 18px;
+    margin-bottom:12px;
+  }
+  .review-item .qcat{margin-bottom:8px;}
+  .review-item .q{font-family:var(--serif); font-size:15px; margin-bottom:10px;}
+  .review-item .ans-line{font-size:13px; margin-bottom:4px;}
+  .review-item .ans-line .lbl{color:var(--ink-soft);}
+  .review-item .ans-line.your{color:var(--fail);}
+  .review-item .ans-line.right{color:var(--pass);}
+  .review-item .exp{font-size:13px; color:var(--ink-soft); margin-top:8px; line-height:1.7;}
+
+  .result-actions{display:flex; gap:10px; margin-top:22px;}
+  .result-actions button{
+    flex:1;
+    padding:14px;
+    border-radius:var(--radius);
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    font-family:var(--sans);
+    border:none;
+  }
+  .btn-primary{background:var(--navy); color:#fff;}
+  .btn-secondary{background:#fff; color:var(--ink); border:1.5px solid var(--ink-soft) !important;}
+
+  footer{
+    text-align:center;
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-top:40px;
+  }
+
+  /* ---- gallery ---- */
+  .gallery-intro{
+    font-family:var(--serif);
+    font-size:15px;
+    line-height:1.9;
+    color:var(--ink);
+    margin:0 0 24px;
+  }
+  .diagram-card{
+    background:#fff;
+    border:1px solid var(--paper-line);
+    border-radius:var(--radius);
+    padding:20px;
+    margin-bottom:20px;
+  }
+  .diagram-card h3{
+    font-family:var(--serif);
+    font-size:17px;
+    margin:0 0 4px;
+    color:var(--navy-deep);
+  }
+  .diagram-card .sub{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  .diagram-card svg{
+    width:100%;
+    height:auto;
+    display:block;
+    background:#FCFBF7;
+    border:1px solid var(--paper-line);
+    border-radius:3px;
+  }
+  .diagram-card p.note{
+    font-size:13px;
+    color:var(--ink-soft);
+    line-height:1.8;
+    margin:12px 0 0;
+  }
+  .back-btn{
+    display:inline-block;
+    margin-bottom:20px;
+    background:none;
+    border:1px solid var(--ink-soft);
+    color:var(--ink);
+    padding:8px 16px;
+    border-radius:var(--radius);
+    font-size:13px;
+    cursor:pointer;
+    font-family:var(--sans);
+  }
+  .gallery-link{
+    display:block;
+    text-align:center;
+    margin-top:14px;
+    font-size:13px;
+    color:var(--navy);
+    text-decoration:underline;
+    cursor:pointer;
+    background:none;
+    border:none;
+    font-family:var(--sans);
+    width:100%;
+    padding:6px;
+  }
+
+  /* ---- custom confirm modal (no native confirm()) ---- */
+  .modal-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(27,30,34,0.55);
+    z-index:1000;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+  .modal-overlay.show{display:flex;}
+  .modal-box{
+    background:#fff;
+    border-radius:6px;
+    padding:26px 24px 22px;
+    max-width:360px;
+    width:100%;
+    box-shadow:0 10px 40px rgba(0,0,0,0.25);
+  }
+  .modal-box h3{
+    font-family:var(--serif);
+    font-size:17px;
+    margin:0 0 10px;
+    color:var(--ink);
+  }
+  .modal-box p{
+    font-size:14px;
+    color:var(--ink-soft);
+    line-height:1.7;
+    margin:0 0 22px;
+  }
+  .modal-actions{
+    display:flex;
+    gap:10px;
+  }
+  .modal-actions button{
+    flex:1;
+    padding:12px;
+    border-radius:var(--radius);
+    font-size:14px;
+    font-weight:700;
+    cursor:pointer;
+    font-family:var(--sans);
+    border:none;
+  }
+  .modal-cancel{background:#EFEDE5; color:var(--ink);}
+  .modal-confirm{background:var(--fail); color:#fff;}
+
+  @media (max-width:480px){
+    .qtext{font-size:17px;}
+    .result-score{font-size:44px;}
+    .cat-row .name{flex-basis:92px; font-size:12px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <h1 class="brand">QC検定4級 対策問題集<small>ORIGINAL PRACTICE SET &middot; 200 QUESTIONS</small></h1>
+    <div class="tag" id="headerTag">v1.0</div>
+  </header>
+
+  <!-- START SCREEN -->
+  <section class="screen active" id="screen-start">
+    <p class="lede"><span class="num">200</span>問のオリジナル練習問題で、品質管理の基礎知識を確認できます。分野を選んで、今日の演習を始めましょう。</p>
+
+    <div class="panel">
+      <h2>分野を選ぶ</h2>
+      <div class="chip-grid" id="catChips"></div>
+    </div>
+
+    <div class="panel">
+      <h2>出題数</h2>
+      <div class="row" id="countRow">
+        <button class="opt-btn" data-count="10">10問</button>
+        <button class="opt-btn" data-count="20">20問</button>
+        <button class="opt-btn selected" data-count="30">30問</button>
+        <button class="opt-btn" data-count="50">50問</button>
+        <button class="opt-btn" data-count="all">全問</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>出題順</h2>
+      <div class="row" id="orderRow">
+        <button class="opt-btn selected" data-order="random">ランダム</button>
+        <button class="opt-btn" data-order="sequential">分野順</button>
+      </div>
+    </div>
+
+    <button class="start-btn" id="startBtn">この条件で開始する</button>
+    <p class="hint" id="poolHint"></p>
+    <button class="gallery-link" id="galleryLink">📊 QC七つ道具 図解ギャラリーを見る（オリジナル作図）</button>
+  </section>
+
+  <!-- GALLERY SCREEN -->
+  <section class="screen" id="screen-gallery">
+    <button class="back-btn" id="galleryBack">← 戻る</button>
+    <p class="gallery-intro">QC七つ道具のイメージをつかむための、オリジナルの練習用データで作成した図解です。数値は説明のための例であり、公式テキストの図とは異なります。</p>
+    <div id="galleryList"></div>
+  </section>
+
+  <!-- QUIZ SCREEN -->
+  <section class="screen" id="screen-quiz">
+    <div class="progress-row">
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-label" id="progressLabel">1 / 30</div>
+    </div>
+    <div class="quiz-top-row">
+      <div class="score-live">正解 <b id="liveScore">0</b> 問</div>
+      <button class="quit-btn" id="quitBtn">途中でやめる</button>
+    </div>
+
+    <div class="qcard">
+      <span class="qcat" id="qCat">分野</span>
+      <p class="qtext" id="qText">問題文</p>
+      <div class="choices" id="choicesWrap"></div>
+
+      <div class="feedback" id="feedback">
+        <div class="verdict" id="verdict"></div>
+        <div class="exp" id="expText"></div>
+      </div>
+      <button class="next-btn" id="nextBtn" style="display:none;">次の問題へ</button>
+    </div>
+  </section>
+
+  <!-- RESULT SCREEN -->
+  <section class="screen" id="screen-result">
+    <div class="result-hero">
+      <div class="result-score" id="resultScore">0<span>/0</span></div>
+      <div class="result-sub" id="resultPct">正答率 0%</div>
+      <div class="result-msg" id="resultMsg"></div>
+    </div>
+
+    <div class="panel cat-breakdown">
+      <h2>分野別の結果</h2>
+      <div id="catBreakdown"></div>
+    </div>
+
+    <div id="reviewSection">
+      <div class="panel" style="padding-bottom:2px;">
+        <h2>間違えた問題の復習</h2>
+      </div>
+      <div id="reviewList"></div>
+    </div>
+
+    <div class="result-actions">
+      <button class="btn-secondary" id="retryMissedBtn">間違えた問題だけ再挑戦</button>
+      <button class="btn-primary" id="restartBtn">最初からやり直す</button>
+    </div>
+  </section>
+
+  <footer>品質管理検定®の学習を目的としたオリジナル練習問題です。品質管理検定センターとは関係ありません。</footer>
+</div>
+
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box">
+    <h3 id="confirmTitle">確認</h3>
+    <p id="confirmMsg"></p>
+    <div class="modal-actions">
+      <button class="modal-cancel" id="confirmCancelBtn">キャンセル</button>
+      <button class="modal-confirm" id="confirmOkBtn">トップ画面に戻る</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ALL_QUESTIONS = [{"category": "品質管理", "question": "品質の定義として最も適切なものはどれか。", "choices": ["製品の価格の高さ", "製品やサービスが使用目的を満たしている程度", "製品の重量", "製造にかかった時間"], "correct": 1, "explanation": "品質とは「その製品やサービスが使用目的を満たしている程度（使用目的への適合性）」とされています。"}, {"category": "品質管理", "question": "品質を「お客様に満足いただけた程度」ととらえる考え方を何というか。", "choices": ["標準化", "お客様満足（CS）", "PDCA", "5S"], "correct": 1, "explanation": "より広い意味で品質をとらえ、お客様満足（CS：Customer Satisfaction）と呼ぶ場合があります。"}, {"category": "品質管理", "question": "「お客様の話をよく聞き、製品やサービスに対する受取り方や満足度を調べる」ことを何というか。", "choices": ["QCD", "お客様の声（VOC）を聞く", "PDCA", "5W1H"], "correct": 1, "explanation": "VOC（Voice of Customer）を聞くことで、お客様の立場に立った「ねらいの品質」の設定につながります。"}, {"category": "品質管理", "question": "品質管理活動の基本として、品質のばらつきに応じて値段を変えることについて本文が述べているのはどれか。", "choices": ["容易で一般的である", "値段の違いと品質の関係を説明することが困難である", "品質管理の目的そのものである", "お客様には関係がない"], "correct": 1, "explanation": "値段と品質の違いについて十分納得のいく説明をすることは提供する側にとって容易ではないとされています。"}, {"category": "品質管理", "question": "マーケットインの考え方として正しいものはどれか。", "choices": ["提供する側の論理を優先する", "お客様の側から見た論理を優先する", "在庫の削減を最優先する", "広告戦略を優先する"], "correct": 1, "explanation": "マーケットインは、お客様の立場に立って品質を実現していく考え方です。"}, {"category": "品質管理", "question": "プロダクトアウトの考え方として正しいものはどれか。", "choices": ["お客様視点を最優先する", "作ったものを売りさばく考え方", "品質を最優先する", "環境保全を最優先する"], "correct": 1, "explanation": "プロダクトアウトは、提供する側の論理を優先する考え方で、マーケットインと対になる言葉です。"}, {"category": "品質管理", "question": "品質優先とはどういうことを優先することか。", "choices": ["短期的な利益追求", "良い品質の製品やサービスを提供すること", "売上げの拡大", "広告費の増加"], "correct": 1, "explanation": "品質優先とは、短期的な利益追求や売上げ拡大よりも良い品質を優先しようという考え方です。"}, {"category": "品質管理", "question": "品質に関する組織全体の方向付けをトップが表明したものを何というか。", "choices": ["品質方針", "品質保証", "検査基準", "作業標準"], "correct": 0, "explanation": "品質方針は、品質優先の価値観を組織全体で共有するために定められる、トップによる方向付けです。"}, {"category": "品質管理", "question": "サービスが製品の一形態とみなせる理由として本文が述べているのはどれか。", "choices": ["お客様のために行われ便益があるものだから", "無形だから測定できないから", "価格がつけられないから", "品質が関係しないから"], "correct": 0, "explanation": "サービスは、お客様（顧客）と組織（供給者）の間でお客様のために行われる活動で、便益があるものです。"}, {"category": "品質管理", "question": "「安全第一」という言い方が使われる理由として本文の趣旨に合うものはどれか。", "choices": ["安全は人の命に関わるため全てに優先されるから", "安全はコストより軽視されるから", "安全は品質と無関係だから", "安全は法律上の義務ではないから"], "correct": 0, "explanation": "安全は人の命に関わることなので全てに優先され、安全第一という言い方がよく使われます。"}, {"category": "管理", "question": "PDCAサイクルの「P」は何を表すか。", "choices": ["Plan（計画する）", "Process（工程）", "Product（製品）", "Price（価格）"], "correct": 0, "explanation": "P（Plan）は、目的や目標を明確にし、それを実現する方法を計画することです。"}, {"category": "管理", "question": "PDCAサイクルの「C（Check）」の内容として正しいものはどれか。", "choices": ["実施した結果を計画と対比しながら差異を確認すること", "計画を立てること", "準備活動だけを行うこと", "標準を新たに作ること"], "correct": 0, "explanation": "チェックは、計画と実績の差異を確認し、必要に応じて原因を解析する活動です。"}, {"category": "管理", "question": "PDCAサイクルの「A（Act）」の内容として正しいものはどれか。", "choices": ["差異の原因やその影響を除去する対策を講じること", "結果を記録するだけの行為", "何も処置しないこと", "計画を破棄すること"], "correct": 0, "explanation": "アクトは、計画と実績の差異の原因に対して対策を講じ、次の計画に反映させる活動です。"}, {"category": "管理", "question": "過去の経験が十分にあり、技術が確立されている場合、計画（P）の代わりに用いられる考え方はどれか。", "choices": ["標準化（Standardize）", "販売（Sales）", "サービス（Service）", "安全（Safety）"], "correct": 0, "explanation": "既に明確になっている良い方法を標準化し、「S⇒D⇒C⇒A」として管理のサイクルを回すことをSDCAといいます。"}, {"category": "管理", "question": "SDCAのサイクルの順序として正しいものはどれか。", "choices": ["S→D→C→A", "P→D→C→A", "D→C→A→S", "A→C→D→S"], "correct": 0, "explanation": "SDCAは標準（Standardize）に従い、実施・点検・処置を繰り返すサイクルです。"}, {"category": "企業活動の基本｜製品とサービス・QCD＋PSME", "question": "QCDの「Q」は何を表すか。", "choices": ["Quality（品質）", "Quantity（数量）", "Quick（迅速）", "Question（質問）"], "correct": 0, "explanation": "QCDは、Quality（品質）、Cost（コスト）、Delivery（量・納期）の頭文字です。"}, {"category": "企業活動の基本｜製品とサービス・QCD＋PSME", "question": "QCDの「D」は何を表すか。", "choices": ["Design（設計）", "Delivery（量・納期）", "Discount（値引き）", "Data（データ）"], "correct": 1, "explanation": "Deliveryは、約束した量を約束した納期までに届けることを意味します。"}, {"category": "企業活動の基本｜製品とサービス・QCD＋PSME", "question": "QCD＋PSMEの「M」は何を意味するか。", "choices": ["Money（資金）", "Morale・Moral（士気・倫理）", "Machine（機械）", "Material（原材料）"], "correct": 1, "explanation": "Mは働く人々の士気（Morale）や倫理・道徳（Moral）を意味します。"}, {"category": "企業活動の基本｜製品とサービス・QCD＋PSME", "question": "QCD＋PSMEの「E」は何を意味するか。", "choices": ["Efficiency（効率）", "Environment（地球環境保全）", "Economy（経済）", "Education（教育）"], "correct": 1, "explanation": "Eは地球環境保全（Environment）を意味し、近年重視されるようになった要素です。"}, {"category": "企業活動の基本｜製品とサービス・QCD＋PSME", "question": "QCD＋PSMEの「P」は何を意味するか。", "choices": ["Productivity（生産性）", "Process（工程）", "Plan（計画）", "Product（製品）"], "correct": 0, "explanation": "Pは生産性（Productivity）を意味し、職場でのものづくりで品質と同様に重視されます。"}, {"category": "改善", "question": "改善活動を進める代表的な手順として本文で挙げられているのはどれか。", "choices": ["QCストーリー", "5S", "3ム", "KY活動"], "correct": 0, "explanation": "改善活動が盛んな組織では、QCストーリーという問題解決手順を活用して改善を推進しています。"}, {"category": "改善", "question": "問題解決型QCストーリーの最初のステップは何か。", "choices": ["テーマ・目標の選定とその背景", "効果の確認", "標準化と管理の定着", "反省と今後の対応"], "correct": 0, "explanation": "問題解決型QCストーリーは、テーマ・目標の選定から始まり、現状把握、要因解析と続きます。"}, {"category": "改善", "question": "QCサークル活動とは何か。", "choices": ["個人で単独に行う改善活動", "職場の仲間同士で作る小集団改善活動", "経営陣のみで行う活動", "外部委託業者による活動"], "correct": 1, "explanation": "QCサークル活動は、職場の仲間が小グループを作り、自主的に改善を進める小集団改善活動です。"}, {"category": "改善", "question": "改善の着眼点として本文で挙げられている「3ム」とは何を指すか。", "choices": ["ムリ・ムラ・ムダ", "ムード・ムラ・ムキ", "ムリ・ムキ・ムダ", "ムラ・ムキ・ムード"], "correct": 0, "explanation": "改善にあたっては、ムリ・ムラ・ムダという「3ム」を見つけ出し、なくしていくことが重要です。"}, {"category": "改善", "question": "不適合品の要因分析で件数や影響度合いを図に示し、重点指向を実践する際によく用いられる手法はどれか。", "choices": ["特性要因図", "パレート図", "散布図", "チェックシート"], "correct": 1, "explanation": "パレート図に描くことで大方の結果を支配する少数の項目（パレート分析）を見つけることができます。"}, {"category": "改善", "question": "QCサークル活動が目指すものとして本文に挙げられていないものはどれか。", "choices": ["メンバーの能力向上・自己実現", "明るく活力に満ちた職場づくり", "お客様満足の向上", "メンバー個人の給与増加"], "correct": 3, "explanation": "QCサークル活動は能力向上、職場の活性化、お客様満足、社会への貢献を目指すものであり、給与増加自体は目的ではありません。"}, {"category": "改善", "question": "小集団改善活動の例として本文に挙げられていないものはどれか。", "choices": ["JK活動（自主管理活動）", "ZD運動", "CFT", "マーケティング活動"], "correct": 3, "explanation": "小集団改善活動には自主管理活動、ZD運動、CFTなどがありますが、マーケティング活動は該当しません。"}, {"category": "標準・標準化", "question": "標準化の目的として適切でないものはどれか。", "choices": ["無秩序な複雑化の防止", "統一化・単純化を図ること", "品質のばらつきを増やすこと", "作業ミスの防止"], "correct": 2, "explanation": "標準化は品質の安定、作業ミスの防止、能率の向上などを目的とし、ばらつきを減らすことにつながります。"}, {"category": "検査", "question": "検査の基本機能として正しいものはどれか。", "choices": ["良否判定に基づき不適合品を排除すること", "製品を製造すること", "広告を出すこと", "価格を決定すること"], "correct": 0, "explanation": "検査は計測や試験に加え、判定という機能を持ち、不適合品を排除する役割を担います。"}, {"category": "検査", "question": "規定要求事項を満たしている製品を何というか。", "choices": ["不適合品", "適合品", "不合格品", "標準品"], "correct": 1, "explanation": "要求事項を満たしているものを適合品、満たしていないものを不適合品といいます。"}, {"category": "検査", "question": "ロットからサンプルを抜き取ってロット全体の合否を判定する検査方法はどれか。", "choices": ["全数検査", "抜取検査", "無試験検査", "官能検査"], "correct": 1, "explanation": "抜取検査は、ロットからサンプルを抜き取り、その結果からロット全体の合否を判定する方法です。"}, {"category": "検査", "question": "人間の五感によって計測・判定する検査を何というか。", "choices": ["破壊検査", "官能検査", "全数検査", "受入検査"], "correct": 1, "explanation": "官能検査は、手触り・味覚・音・視覚など人間の五感によって判定する検査です。"}, {"category": "検査", "question": "原材料や部品を受け入れる際に行う検査を何というか。", "choices": ["受入検査", "出荷検査", "中間検査", "抜取検査"], "correct": 0, "explanation": "受入検査・購入検査は、原材料や部品を受け入れるときに行う検査です。"}, {"category": "検査", "question": "完成した製品について行う検査を何というか。", "choices": ["受入検査", "最終検査", "工程内検査", "抜取検査"], "correct": 1, "explanation": "最終検査・出荷検査は、完成した製品について行われる検査です。"}, {"category": "検査", "question": "測定によって対象物の機能が失われてしまう検査を何というか。", "choices": ["官能検査", "破壊検査", "全数検査", "抜取検査"], "correct": 1, "explanation": "破壊検査は、計測することで対象物の機能が失われてしまう検査です。"}, {"category": "検査", "question": "自らは測定せず、提出された資料だけで合否を判定する検査を何というか。", "choices": ["全数検査", "無試験検査", "抜取検査", "官能検査"], "correct": 1, "explanation": "無試験検査は、提出された資料のみに基づいて合否を判定する検査方法です。"}, {"category": "検査", "question": "対象全てを検査する方法を何というか。", "choices": ["抜取検査", "全数検査", "無試験検査", "破壊検査"], "correct": 1, "explanation": "全数検査は、対象となる製品すべてを検査する方法です。"}, {"category": "工程（プロセス）", "question": "プロセス（工程）の構成要素とされる「4M」に含まれないものはどれか。", "choices": ["人（Man）", "機械・設備（Machine）", "予算（Money）", "方法（Method）"], "correct": 2, "explanation": "4Mは、人（Man）、機械・設備（Machine）、原材料（Material）、方法（Method）の4つです。"}, {"category": "工程（プロセス）", "question": "あるプロセスに注目したとき、その前にあるプロセスを何というか。", "choices": ["後工程", "前工程", "外注工程", "検査工程"], "correct": 1, "explanation": "前工程（まえこうてい）は、注目するプロセスより前にあるプロセスのことです。"}, {"category": "工程（プロセス）", "question": "「品質は工程で作り込め」という考え方の意味として正しいものはどれか。", "choices": ["検査だけで品質を保証すればよい", "プロセスでしっかり仕事を行い不適合を出さないようにすること", "コストを下げることが最優先", "納期を守ることが最優先"], "correct": 1, "explanation": "検査の段階で不適合がわかるより、プロセスで不適合を出さないようにする方がはるかに大切だとされています。"}, {"category": "工程（プロセス）", "question": "4Mに計測（Measurement）を加えたものを何というか。", "choices": ["5M", "5S", "5W1H", "QCD"], "correct": 0, "explanation": "4Mに計測（Measurement）のMを加えて5Mという場合があります。"}, {"category": "工程（プロセス）", "question": "「後工程はお客様」という考え方の意味として正しいものはどれか。", "choices": ["後工程で働く人に喜んでもらえるよう心がけて活動すること", "後工程を無視してよいこと", "後工程にコストを転嫁すること", "後工程の検査を省略すること"], "correct": 0, "explanation": "後工程で働く人に喜んでもらえるように心がけて活動する考え方を「後工程はお客様」といいます。"}, {"category": "事実に基づく判断", "question": "重さや長さなど連続量として測られるデータを何というか。", "choices": ["計数値", "計量値", "言語データ", "質的データ"], "correct": 1, "explanation": "計量値のデータは、重さ・長さ・時間・温度のように連続量として測られるデータです。"}, {"category": "事実に基づく判断", "question": "不適合品の数や事故件数など個数で数えられるデータを何というか。", "choices": ["計量値", "計数値", "感性データ", "名義データ"], "correct": 1, "explanation": "計数値のデータは、1個、2個…と個数で数えられるデータです。"}, {"category": "事実に基づく判断", "question": "母集団からサンプルを抽出する行為を何というか。", "choices": ["層別", "サンプリング", "分類", "検査"], "correct": 1, "explanation": "サンプリング（抽出）は、母集団からサンプルを取る行為をいいます。"}, {"category": "事実に基づく判断", "question": "偏りなく無作為にサンプルをとる方法を何というか。", "choices": ["ランダムサンプリング", "全数調査", "有意抽出", "意図的抽出"], "correct": 0, "explanation": "ランダムサンプリングは、母集団を構成する要素が等しい確率でサンプルに含まれるサンプリング方法です。"}, {"category": "事実に基づく判断", "question": "「母集団」の説明として正しいものはどれか。", "choices": ["考察の対象となる特性をもつすべてのものの集団", "抽出されたサンプルのこと", "標準のこと", "検査結果のこと"], "correct": 0, "explanation": "母集団は、考察の対象となる特性をもつすべてのものの集まりです。"}, {"category": "事実に基づく判断", "question": "母集団の一部として定義される集団を何と呼ぶか。", "choices": ["全体集団", "部分母集団", "標本集団", "検査集団"], "correct": 1, "explanation": "母集団の一部として定義される集団を「部分母集団」と呼ぶことがあります。"}, {"category": "事実に基づく判断", "question": "数値で表さない、きれい・大きいなどのデータを何というか。", "choices": ["計量値", "計数値", "言語データ", "統計量"], "correct": 2, "explanation": "言語データは、数値ではなく言葉で表現されるデータで、感性的データなどが含まれます。"}, {"category": "事実に基づく判断", "question": "サンプルを測定して得たデータから計算される平均やメディアンなどの値を何というか。", "choices": ["観測値", "統計量", "標準値", "規格値"], "correct": 1, "explanation": "サンプルから計算される平均・メディアン・範囲などの値を統計量といいます。"}, {"category": "事実に基づく判断", "question": "「サンプリング単位」の説明として正しいものはどれか。", "choices": ["母集団を構成する単位", "検査基準", "標準", "規格"], "correct": 0, "explanation": "サンプリング単位は、母集団を構成する単位のことです。"}, {"category": "事実に基づく判断", "question": "「単一観測の結果得られる特性の値」を何というか。", "choices": ["観測値（測定値）", "統計量", "標準偏差", "範囲"], "correct": 0, "explanation": "観測値（測定値）は、1回の測定結果として得られた値のことです。"}, {"category": "事実に基づく判断", "question": "データ 4, 6, 8 の平均はいくつか。", "choices": ["5", "6", "7", "8"], "correct": 1, "explanation": "平均＝(4+6+8)÷3＝6 となります。"}, {"category": "事実に基づく判断", "question": "データ 2, 4, 6, 8, 10 のメディアン（中央値）はいくつか。", "choices": ["4", "5", "6", "8"], "correct": 2, "explanation": "5個のデータを大きさ順に並べたとき中央にくる値は6です。"}, {"category": "事実に基づく判断", "question": "データ 3, 7, 10 の範囲Rはいくつか。", "choices": ["3", "7", "10", "13"], "correct": 1, "explanation": "範囲R＝最大値－最小値＝10－3＝7 です。"}, {"category": "事実に基づく判断", "question": "データ 1, 2, 3, 4 のメディアン（中央値）はいくつか。", "choices": ["2", "2.5", "3", "3.5"], "correct": 1, "explanation": "データが偶数個の場合、中央の2つの値の平均がメディアンです。(2+3)÷2＝2.5"}, {"category": "事実に基づく判断", "question": "範囲Rを求める式として正しいものはどれか。", "choices": ["最大値＋最小値", "最大値－最小値", "平均－最小値", "最大値÷最小値"], "correct": 1, "explanation": "範囲R＝最大値－最小値、という式で計算されます。"}, {"category": "事実に基づく判断", "question": "データ 10, 12, 14, 16, 18 の平均はいくつか。", "choices": ["12", "14", "15", "16"], "correct": 1, "explanation": "平均＝(10+12+14+16+18)÷5＝70÷5＝14 です。"}, {"category": "事実に基づく判断", "question": "データ 5, 9, 9, 12 のメディアン（中央値）はいくつか。", "choices": ["9", "9.5", "10", "12"], "correct": 0, "explanation": "大きさ順に並べると5,9,9,12。中央2つの平均は(9+9)÷2＝9です。"}, {"category": "事実に基づく判断", "question": "データ 20, 22, 25, 30 の範囲Rはいくつか。", "choices": ["5", "8", "10", "12"], "correct": 2, "explanation": "範囲R＝最大値－最小値＝30－20＝10 です。"}, {"category": "事実に基づく判断", "question": "n個のデータの平均を求める式で、分母に用いる値は何か。", "choices": ["データの最大値", "データの個数（n）", "データの範囲", "データの標準偏差"], "correct": 1, "explanation": "平均＝データの合計÷データの個数（n）で求められます。"}, {"category": "QC七つ道具｜総論", "question": "QC七つ道具として選ばれた手法に含まれないものはどれか。", "choices": ["パレート図", "特性要因図", "マトリックス図", "ヒストグラム"], "correct": 2, "explanation": "マトリックス図は新QC七つ道具の手法であり、QC七つ道具には含まれません。"}, {"category": "QC七つ道具｜総論", "question": "QC七つ道具は主にどのようなデータを扱う手法か。", "choices": ["言語データ", "数値データ", "感性データ", "名義データ"], "correct": 1, "explanation": "QC七つ道具は主に数値データを扱う手法が中心です。"}, {"category": "QC七つ道具｜総論", "question": "数値にならない言語データを扱う手法として提唱されているものはどれか。", "choices": ["QC七つ道具", "新QC七つ道具", "統計的手法", "実験計画法"], "correct": 1, "explanation": "言語データを扱う手法として新QC七つ道具があります。"}, {"category": "QC七つ道具｜総論", "question": "QC七つ道具を用いる際にまず大切なこととして本文が述べているのはどれか。", "choices": ["すぐに実践すること", "それらを勉強して活用の目的を理解すること", "専門家に全て任せること", "使わないこと"], "correct": 1, "explanation": "QC七つ道具を用いて改善を行うには、まずそれらを勉強し活用の目的を理解することが大切です。"}, {"category": "QC七つ道具｜総論", "question": "QC七つ道具を活用する最終的な目的として正しいものはどれか。", "choices": ["図を描くこと自体が目的", "データを収集・分析し問題解決や課題達成を図ること", "検定に合格することのみ", "資料を増やすことのみ"], "correct": 1, "explanation": "QC七つ道具はあくまでツールであり、目的は問題解決や課題達成を図ることです。"}, {"category": "QC七つ道具｜パレート図", "question": "パレート図の説明として正しいものはどれか。", "choices": ["項目別に層別し出現頻度順に並べ累積和を示した図", "時間の経過を示す図", "二つの特性の関係を示す図", "内訳を円で示す図"], "correct": 0, "explanation": "パレート図は、項目別に層別して出現頻度の大きさの順に並べ、累積和を示した図です。"}, {"category": "QC七つ道具｜パレート図", "question": "パレート図の活用で適用される考え方はどれか。", "choices": ["重点指向", "3ム", "5S", "PDCAサイクル"], "correct": 0, "explanation": "パレート図は、重要な現象や原因をはっきり示し、重点指向の考え方を実践するのに役立ちます。"}, {"category": "QC七つ道具｜パレート図", "question": "少数の項目が全体の結果の大部分を占めるという経験的な法則を何というか。", "choices": ["ハインリッヒの法則", "パレートの法則", "マーフィーの法則", "ナイキストの法則"], "correct": 1, "explanation": "少数の項目が大方の結果を支配するという経験的な法則をパレートの法則といいます。"}, {"category": "QC七つ道具｜パレート図", "question": "パレート図で、データが少なく影響の小さい項目をまとめて表記する項目名は何か。", "choices": ["重要項目", "その他", "特別項目", "対象外"], "correct": 1, "explanation": "データが少なく影響の小さい項目はまとめて「その他」として項目の最後に書きます。"}, {"category": "QC七つ道具｜特性要因図", "question": "特性要因図は別名何と呼ばれるか。", "choices": ["魚の骨", "矢印図", "蜘蛛の巣図", "樹形図"], "correct": 0, "explanation": "特性要因図は矢印と枝分かれした線の形が魚の骨に似ていることから「魚の骨」とも呼ばれます。"}, {"category": "QC七つ道具｜特性要因図", "question": "特性要因図の大骨の部分に置かれることが多いものはどれか。", "choices": ["4M", "5S", "QCD", "PDCA"], "correct": 0, "explanation": "大骨の部分には4M（人、機械・設備、原材料、方法）に相当するものを置くことがあります。"}, {"category": "QC七つ道具｜特性要因図", "question": "特性要因図を作成する際に、自由に多くの意見を出し合う手法はどれか。", "choices": ["ブレーンストーミング", "アンケート調査", "インタビュー", "実験計画法"], "correct": 0, "explanation": "特性要因図の作成では、ブレーンストーミングなどの方法で自由に意見を出し合うことが大切です。"}, {"category": "QC七つ道具｜特性要因図", "question": "特性要因図で、結果に大きな影響を与えると考えられる要因を示す際に用いる図形はどれか。", "choices": ["四角", "丸", "三角", "星"], "correct": 1, "explanation": "重要と考えられる要因は丸の枠で囲むとよいとされています。"}, {"category": "QC七つ道具｜ヒストグラム", "question": "ヒストグラムは何のグラフの一種か。", "choices": ["折れ線グラフ", "棒グラフ", "円グラフ", "帯グラフ"], "correct": 1, "explanation": "ヒストグラムは棒グラフの一種で、計量値の度数分布を長方形で表したものです。"}, {"category": "QC七つ道具｜ヒストグラム", "question": "ヒストグラムが二山形になる場合、疑うべきこととして正しいものはどれか。", "choices": ["異なる分布が混じり合っている可能性", "測定ミスのみが原因", "規格が誤っていること", "特に問題はないこと"], "correct": 0, "explanation": "二山形は平均の異なる二つの分布が混じり合っている可能性があり、層別してみるとよいとされています。"}, {"category": "QC七つ道具｜ヒストグラム", "question": "ヒストグラムで、端の切れたような形を何というか。", "choices": ["一般形", "絶壁形", "離れ小島形", "歯抜け形"], "correct": 1, "explanation": "絶壁形は、規格はずれのものを除いて作成したときにできることが多い形です。"}, {"category": "QC七つ道具｜ヒストグラム", "question": "ヒストグラムで、区間の度数が交互に増減している形を何というか。", "choices": ["離れ小島形", "歯抜け形（くし歯形）", "絶壁形", "一般形"], "correct": 1, "explanation": "歯抜け形は、測定のやり方にくせがある場合や区間の決め方が適切でないときに現れます。"}, {"category": "QC七つ道具｜グラフ・管理図", "question": "時間的な変化を表すのに適したグラフはどれか。", "choices": ["円グラフ", "折れ線グラフ", "帯グラフ", "ヒストグラム"], "correct": 1, "explanation": "折れ線グラフは、時間的な変化を表すのに適したグラフです。"}, {"category": "QC七つ道具｜グラフ・管理図", "question": "内訳を面積で表すグラフとして本文に挙げられているものはどれか。", "choices": ["折れ線グラフ", "棒グラフ", "円グラフ", "管理図"], "correct": 2, "explanation": "円グラフは内訳を表すグラフの代表例として挙げられています。"}, {"category": "QC七つ道具｜グラフ・管理図", "question": "管理図の中心線の略称はどれか。", "choices": ["UCL", "LCL", "CL", "SL"], "correct": 2, "explanation": "CL（Central Line）は管理図の中心線を表します。"}, {"category": "QC七つ道具｜グラフ・管理図", "question": "管理図で上側管理限界線の略称はどれか。", "choices": ["UCL", "LCL", "CL", "SD"], "correct": 0, "explanation": "UCL（Upper Control Limit）は上側（上方）管理限界線を表します。"}, {"category": "QC七つ道具｜グラフ・管理図", "question": "管理図で打点が管理限界線から飛び出た場合、プロセスはどう判断されるか。", "choices": ["正常である", "異常である", "不明である", "良好である"], "correct": 1, "explanation": "打点が管理限界線から飛び出た場合、「プロセス（工程）は異常である」と判断します。"}, {"category": "QC七つ道具｜グラフ・管理図", "question": "打点が中心線の片側に連続して偏るなどの状態を何というか。", "choices": ["くせ", "ばらつき", "標準", "誤差"], "correct": 0, "explanation": "くせは、管理図において工程が異常かどうかを判定するための基準として用いられます。"}, {"category": "QC七つ道具｜グラフ・管理図", "question": "管理図で下側管理限界線の略称はどれか。", "choices": ["UCL", "LCL", "CL", "SD"], "correct": 1, "explanation": "LCL（Lower Control Limit）は下側（下方）管理限界線を表します。"}, {"category": "QC七つ道具｜チェックシート", "question": "チェックシートの目的として正しいものはどれか。", "choices": ["計数データを分類項目ごとに見やすくすること", "製品を製造すること", "広告を作成すること", "価格を決定すること"], "correct": 0, "explanation": "チェックシートは、計数データを収集する際に分類項目のどこに集中しているかを見やすくした表・図です。"}, {"category": "QC七つ道具｜チェックシート", "question": "事前に定められた点検項目を満たしているかを調べるチェックシートを何というか。", "choices": ["記録・調査用チェックシート", "点検・確認用チェックシート", "パレート図", "特性要因図"], "correct": 1, "explanation": "点検・確認用チェックシートは、事前に定められた点検項目を満たしているかを調査するものです。"}, {"category": "QC七つ道具｜散布図", "question": "散布図は何と何の関係を調べるために使われるか。", "choices": ["二つの特性間の相関", "時間の経過", "内訳の割合", "頻度の順位"], "correct": 0, "explanation": "散布図は、対応のある二つの特性（変数）間の相互の関係を調べるのに使われます。"}, {"category": "QC七つ道具｜散布図", "question": "xが増加するとyも増加する関係を何というか。", "choices": ["負の相関", "正の相関", "無相関", "逆相関"], "correct": 1, "explanation": "xの増加とともにyも増加する関係を「正の相関がある」といいます。"}, {"category": "QC七つ道具｜散布図", "question": "xが増加するとyが減少する関係を何というか。", "choices": ["正の相関", "負の相関", "無相関", "等相関"], "correct": 1, "explanation": "xの増加とともにyが減少する関係を「負の相関がある」といいます。"}, {"category": "QC七つ道具｜散布図", "question": "xが増加してもyに影響が見られない場合の関係を何というか。", "choices": ["正の相関", "負の相関", "相関は見られない", "強い相関"], "correct": 2, "explanation": "xとyの間に規則的な関係が見られない場合、「相関は見られない」といいます。"}, {"category": "QC七つ道具｜層別", "question": "層別とは何をすることか。", "choices": ["母集団をいくつかの層に分割すること", "データを平均すること", "グラフを描くこと", "検査をすること"], "correct": 0, "explanation": "層別とは、母集団をいくつかの層に分割することをいいます。"}, {"category": "QC七つ道具｜層別", "question": "あらかじめ用意されたカテゴリーに従って試料を仕分ける方法・行為を何というか。", "choices": ["層別", "分類", "抽出", "サンプリング"], "correct": 1, "explanation": "「分類」は、あらかじめ用意されたカテゴリーに従って試料を仕分ける行為で、層別と混同しないよう注意が必要です。"}, {"category": "QC七つ道具｜層別", "question": "層別と組み合わせて活用すると効果的な手法として本文に挙げられていないものはどれか。", "choices": ["パレート図", "ヒストグラム", "散布図", "円グラフ"], "correct": 3, "explanation": "層別はパレート図、ヒストグラム、散布図、管理図などと合わせて活用すると効果的です。"}, {"category": "企業活動の基本｜報告・連絡・相談", "question": "「ほうれんそう」とは何の略か。", "choices": ["報告・連絡・相談", "報告・連携・想像", "方針・連絡・相談", "報告・連絡・総括"], "correct": 0, "explanation": "報告・連絡・相談の三つを略して「ほうれんそう（報連相）」といいます。"}, {"category": "企業活動の基本｜報告・連絡・相談", "question": "業務が長期にわたる場合に行うべき報告は何か。", "choices": ["最終報告のみ", "中間報告", "何も報告しない", "事後報告のみ"], "correct": 1, "explanation": "業務が長期にわたる場合は、進捗状況や今後の取り組み方についての中間報告をします。"}, {"category": "企業活動の基本｜報告・連絡・相談", "question": "「連絡」において避けるべきこととして本文が述べているのはどれか。", "choices": ["事実を伝えること", "自分の意見や憶測を入れること", "速やかに伝えること", "関係者に知らせること"], "correct": 1, "explanation": "連絡の際には、自分の意見や憶測を入れないようにすることが大切です。"}, {"category": "企業活動の基本｜報告・連絡・相談", "question": "相談する際に大切なこととして本文が述べているのはどれか。", "choices": ["何を相談したいのかを明確にすること", "誰にも相談しないこと", "自己判断だけで解決すること", "資料は準備しないこと"], "correct": 0, "explanation": "相談する場合は、何を相談したいのかを明確にし、資料やデータを準備することも大切です。"}, {"category": "企業活動の基本｜報告・連絡・相談", "question": "「報告」の際にまず伝えるべきこととして正しいものはどれか。", "choices": ["経緯を長々と説明する", "結論を簡潔に述べる", "言い訳をする", "何も言わない"], "correct": 1, "explanation": "報告は、わかりやすく要点を確実に伝えるため、まず結論を簡潔に述べることが大切です。"}, {"category": "企業活動の基本｜報告・連絡・相談", "question": "悪い報告を受けたときの、報告を受ける側の望ましい態度はどれか。", "choices": ["怒る", "報告しやすい雰囲気を作る", "無視する", "報告者を責める"], "correct": 1, "explanation": "正しい報告をタイムリーに受けるためには、報告しやすい雰囲気を作ることが大切だとされています。"}, {"category": "企業活動の基本｜報告・連絡・相談", "question": "相談を受ける側に求められる姿勢として正しいものはどれか。", "choices": ["上の空で聞き流す", "親身になって相談に乗る", "そっぽを向く", "無関心でいる"], "correct": 1, "explanation": "相談を受ける側は、自覚を強くもち、親身になって相談に乗る姿勢が大切です。"}, {"category": "企業活動の基本｜5W1H", "question": "5W1Hの「Why」は何を意味するか。", "choices": ["何を", "いつ", "なぜ", "どこで"], "correct": 2, "explanation": "Whyは「なぜ、どうして、何のために」（目的・理由・背景）を意味します。"}, {"category": "企業活動の基本｜5W1H", "question": "5W1Hに「How much」を加えると何と呼ばれるか。", "choices": ["6W1H", "5W2H", "4W2H", "5W1H2"], "correct": 1, "explanation": "How much（いくらかかるか）を加えると5W2Hという言い方をすることがあります。"}, {"category": "企業活動の基本｜5W1H", "question": "5W1Hの「Where」は何を意味するか。", "choices": ["誰が", "どこで", "いつ", "なぜ"], "correct": 1, "explanation": "Whereは「どこで、どの職場の」（場所・組織）を意味します。"}, {"category": "企業活動の基本｜5W1H", "question": "5W1Hの「Who」は何を意味するか。", "choices": ["何を", "誰が、誰と、誰に", "どのように", "いつ"], "correct": 1, "explanation": "Whoは「誰が、誰と、誰に」（人）を意味します。"}, {"category": "企業活動の基本｜5W1H", "question": "5W1Hの「How」は何を意味するか。", "choices": ["なぜ", "どのように、どのくらい", "いつ", "どこで"], "correct": 1, "explanation": "Howは「どのように、どのくらい」（方法・程度）を意味します。"}, {"category": "企業活動の基本｜三現主義・5ゲン主義", "question": "三現主義の「三つの現」に含まれないものはどれか。", "choices": ["現場", "現物", "現実", "現金"], "correct": 3, "explanation": "三現主義は現場・現物・現実の三つの「現」をひとまとめにした用語です。"}, {"category": "企業活動の基本｜三現主義・5ゲン主義", "question": "5ゲン主義は三現主義に何を加えたものか。", "choices": ["原理・原則", "現金・現物", "予算・時間", "人員・組織"], "correct": 0, "explanation": "5ゲン主義は、三現主義に「原理・原則」の二つの「原（げん）」を加えたものです。"}, {"category": "企業活動の基本｜三現主義・5ゲン主義", "question": "「てこの原理」のように意図的に変更できないものを何というか。", "choices": ["原則", "原理", "標準", "規格"], "correct": 1, "explanation": "原理は人知を超えたものごとの基本的な理であり、利用はできても意図的に変更することはできません。"}, {"category": "企業活動の基本｜三現主義・5ゲン主義", "question": "過去の経験や論理に基づき人が作ったルールで、適用条件により変更可能なものを何というか。", "choices": ["原理", "原則", "規格", "標準"], "correct": 1, "explanation": "原則は、過去の経験や論理に基づいて人が作ったルールで、適用条件によって変化し変更も可能です。"}, {"category": "企業活動の基本｜三現主義・5ゲン主義", "question": "「食中毒予防の三原則」は何の例として本文に挙げられているか。", "choices": ["原理", "原則", "標準", "規格"], "correct": 1, "explanation": "食中毒予防の三原則は、人が作ったルールである「原則」の例として挙げられています。"}, {"category": "企業活動の基本｜三現主義・5ゲン主義", "question": "「アルキメデスの原理」は何の例として本文に挙げられているか。", "choices": ["原則", "原理", "標準", "規格"], "correct": 1, "explanation": "アルキメデスの原理は、人知を超えたものごとの基本的な理である「原理」の例として挙げられています。"}, {"category": "企業活動の基本｜企業生活のマナー・規則", "question": "ビジネスマナーの基本となる自覚として本文が挙げているのはどれか。", "choices": ["社会人としての自覚", "学生としての自覚", "経営者だけの自覚", "顧客の自覚"], "correct": 0, "explanation": "ビジネスマナーの基本は社会人としての自覚であるとされています。"}, {"category": "企業活動の基本｜企業生活のマナー・規則", "question": "コンプライアンスの意味として正しいものはどれか。", "choices": ["法令や社会規範・企業倫理を守ること", "利益を最優先すること", "顧客を無視すること", "規則を破ること"], "correct": 0, "explanation": "コンプライアンスとは、要求や命令に従うこと、特に企業が法令や社会規範・企業倫理を守ることを指します。"}, {"category": "企業活動の基本｜企業生活のマナー・規則", "question": "本文における「挨拶」の意味として正しいものはどれか。", "choices": ["心を開いて相手に近づいていくこと", "形式的な儀礼にすぎないこと", "義務的な行為にすぎないこと", "特に意味はないこと"], "correct": 0, "explanation": "挨拶には「心を開いて相手に近づいていく」という意味があるとされています。"}, {"category": "企業活動の基本｜企業生活のマナー・規則", "question": "初対面で年下の人に対する言葉遣いとして適切なものはどれか。", "choices": ["いきなり呼び捨てにする", "「さん」付けで呼ぶ", "無視する", "タメ口で話す"], "correct": 1, "explanation": "たとえ年下の人に対してでも、初対面でいきなり呼び捨てにせず「さん」付けで呼ぶようにしましょう。"}, {"category": "企業活動の基本｜企業生活のマナー・規則", "question": "「公私混同をしない」というマナーの説明として正しいものはどれか。", "choices": ["職場の備品を私的に使わないこと", "私物を職場で自由に使うこと", "誰にでも私的な指示を出すこと", "特に制限はないこと"], "correct": 0, "explanation": "私的な用件で職場の備品を使うなど、組織の財産を個人的な理由で用いてはいけません。"}, {"category": "企業活動の基本｜企業生活のマナー・規則", "question": "職場の机やロッカーについて本文が述べていることはどれか。", "choices": ["自分のものなので自由に扱ってよい", "会社からの借り物であり整理整頓が大切", "使わなくてよい", "誰かが管理してくれる"], "correct": 1, "explanation": "職場の机やロッカーは自分のものではなく会社からの借り物であり、常に整理整頓を行うことが大切です。"}, {"category": "企業活動の基本｜企業生活のマナー・規則", "question": "環境に配慮するマナーとして本文に挙げられているものはどれか。", "choices": ["ゴミを分別して捨てる", "ゴミを増やす", "資源を無駄遣いする", "特に気にしない"], "correct": 0, "explanation": "ゴミを分別して捨て、量をなるべく少なくするなど地球環境に配慮した活動もマナーの一つです。"}, {"category": "企業活動の基本｜企業生活のマナー・規則", "question": "時間厳守のマナーとして本文が推奨しているのはどれか。", "choices": ["決められた時間ぎりぎりに間に合えばよい", "決められた時間の5分前には持ち場につく", "時間は特に気にしなくてよい", "休憩時間と就業時間の区別は不要"], "correct": 1, "explanation": "決められた時間の5分前には持ち場について、すぐに業務が開始できるようにしておくことが大切です。"}, {"category": "企業活動の基本｜5S", "question": "5Sに含まれないものはどれか。", "choices": ["整理", "整頓", "清掃", "節約"], "correct": 3, "explanation": "5Sは整理・整頓・清掃・清潔・しつけ（躾）の頭文字です。"}, {"category": "企業活動の基本｜5S", "question": "「整理」の意味として正しいものはどれか。", "choices": ["要るものと要らないものに分け、要らないものを捨てること", "決められた場所に物を置くこと", "常に掃除をすること", "習慣を身に付けること"], "correct": 0, "explanation": "整理とは、要るものと要らないものに分け、要らないものを捨てることです。"}, {"category": "企業活動の基本｜5S", "question": "「整頓」の意味として正しいものはどれか。", "choices": ["要らないものを捨てること", "決められた物を決められた場所に置くこと", "常に掃除をすること", "決められたことを守る習慣を身に付けること"], "correct": 1, "explanation": "整頓とは、決められた物を決められた場所に置き、いつでも取り出せる状態にしておくことです。"}, {"category": "企業活動の基本｜5S", "question": "「しつけ（躾）」の意味として正しいものはどれか。", "choices": ["決められたことを正しく守る習慣を身に付けること", "掃除をすること", "整理をすること", "決められた場所に置くこと"], "correct": 0, "explanation": "しつけとは、決められたことを正しく守る習慣を身に付けることです。"}, {"category": "企業活動の基本｜5S", "question": "「清潔」の意味として正しいものはどれか。", "choices": ["整理・整頓・清掃を維持すること", "要らないものを捨てること", "物を置く場所を決めること", "掃除をすること"], "correct": 0, "explanation": "清潔とは、整理・整頓・清掃の状態を維持することです。"}, {"category": "企業活動の基本｜安全衛生", "question": "安全運動のシンボルマークとして本文に挙げられているのはどれか。", "choices": ["赤十字", "緑十字", "青い羽根", "白いリボン"], "correct": 1, "explanation": "緑十字マークは安全運動のシンボルマークで、安全第一とセットで用いられます。"}, {"category": "企業活動の基本｜安全衛生", "question": "ヒヤリ・ハットとは何を意味するか。", "choices": ["実際に災害になった事故", "危険な状態や行動があったが災害にはならなかったこと", "標準通りの作業のこと", "検査に合格した状態"], "correct": 1, "explanation": "ヒヤリ・ハットとは、ヒヤリとした、ハッとしたことで、実際には災害にならなかった危険な状態や行動を指します。"}, {"category": "企業活動の基本｜安全衛生", "question": "危険予知活動の略称はどれか。", "choices": ["KYT", "KYK", "PDCA", "QCD"], "correct": 1, "explanation": "危険予知活動はKYK（KY活動）と呼ばれます。危険予知トレーニングはKYTです。"}, {"category": "企業活動の基本｜安全衛生", "question": "ハインリッヒの法則によると、1件の重大な傷害の背後には何件の軽微な傷害があるとされるか。", "choices": ["29件", "300件", "100件", "10件"], "correct": 0, "explanation": "ハインリッヒの法則では「1件の重大な傷害の背後には29件の軽微な傷害がある」とされています。"}, {"category": "企業活動の基本｜安全衛生", "question": "ハインリッヒの法則によると、1件の重大な傷害の背景には何件の傷害のない事故（ヒヤリ・ハット）があるとされるか。", "choices": ["29件", "300件", "50件", "10件"], "correct": 1, "explanation": "ハインリッヒの法則では「その背景には300件の傷害のない事故がある」とされ、これを300運動とも呼びます。"}, {"category": "企業活動の基本｜安全衛生", "question": "作業前に対象物を指差し、大きな声で確認することを何というか。", "choices": ["指差呼称", "危険予知トレーニング", "ブレーンストーミング", "5S活動"], "correct": 0, "explanation": "指差呼称は、自分のすべき行動を対象物を見て指差し、大きな声で確認することです。"}, {"category": "企業活動の基本｜安全衛生", "question": "危険予知トレーニング（KYT）の目的として正しいものはどれか。", "choices": ["危険な箇所や行動を視覚的に見つけ出し対策を考える訓練", "製品を検査する訓練", "営業成績を上げる訓練", "会計処理の訓練"], "correct": 0, "explanation": "KYTは、イラストや写真を用いて危険な箇所や行動を視覚的に見つけ出し、対策を考える訓練活動です。"}, {"category": "企業活動の基本｜安全衛生", "question": "服装の乱れが引き起こしやすいものとして本文が述べているのはどれか。", "choices": ["作業ミスや事故", "売上げの増加", "品質の向上", "特に問題はない"], "correct": 0, "explanation": "服装の乱れは、作業ミスや事故のもとになるとされています。"}, {"category": "用語解説（総復習）", "question": "「顧客・社会のニーズを満たす製品・サービスの品質を効果的かつ効率的に達成する活動」を何というか。", "choices": ["品質管理", "品質保証", "検査", "標準化"], "correct": 0, "explanation": "品質管理は、顧客・社会のニーズを満たす製品・サービスの品質を効果的かつ効率的に達成する活動と定義されています。"}, {"category": "用語解説（総復習）", "question": "「一つ以上不適合があるアイテム」を何というか。", "choices": ["不適合品", "適合品", "標準品", "合格品"], "correct": 0, "explanation": "不適合品は、一つ以上の不適合があるアイテムのことです。"}, {"category": "用語解説（総復習）", "question": "「要求事項を満たしていないこと」を何というか。", "choices": ["適合", "不適合", "合格", "標準"], "correct": 1, "explanation": "不適合は、要求事項を満たしていないことを指す用語です。"}, {"category": "用語解説（総復習）", "question": "「関係する人々の間で利益や利便が公正に得られるように統一・単純化を図る目的で定めた取決め」を何というか。", "choices": ["標準", "検査", "品質", "管理"], "correct": 0, "explanation": "標準は、公正な利益・利便のために統一・単純化を図る目的で定めた取決めです。"}, {"category": "用語解説（総復習）", "question": "「等しい条件下で生産され、又は生産されたと思われる品物の集まり」を何というか。", "choices": ["サンプル", "ロット", "母集団", "標準"], "correct": 1, "explanation": "ロットは、等しい条件下で生産された品物の集まりを指します。"}, {"category": "用語解説（総復習）", "question": "「インプットをアウトプットに変換する、相互に関連する一連の活動」を何というか。", "choices": ["プロセス（工程）", "検査", "管理", "標準化"], "correct": 0, "explanation": "プロセス（工程）は、インプットをアウトプットに変換する一連の活動と定義されています。"}, {"category": "用語解説（総復習）", "question": "苦情のうち、補償や代償も併せて求めるものを何というか。", "choices": ["コンプレイン", "クレーム", "フィードバック", "レビュー"], "correct": 1, "explanation": "供給者に対する苦情のうち、補償や代償も併せて求めるものをクレームといいます。"}, {"category": "用語解説（総復習）", "question": "苦情のうち、単なる不満だけを表明しているものを何というか。", "choices": ["クレーム", "コンプレイン（不平）", "感謝", "要望"], "correct": 1, "explanation": "単なる不満だけを表明しているものをコンプレイン（不平）といいます。"}, {"category": "用語解説（総復習）", "question": "「要因」と「原因」の違いとして正しいものはどれか。", "choices": ["要因のうち因果関係が明確になったものを原因という", "原因のうち明確になったものを要因という", "両者は全く同じ意味である", "要因は結果、原因は過程を表す"], "correct": 0, "explanation": "結果に影響を及ぼす可能性のあるものを要因といい、その中で因果関係が明確になったものを原因といいます。"}, {"category": "用語解説（総復習）", "question": "突き止めて取り除くことが困難、あるいは意味のない原因を何というか。", "choices": ["突き止められる原因", "偶然原因", "主要原因", "特殊原因"], "correct": 1, "explanation": "偶然原因は、突き止めて取り除くことが技術的・経済的に困難な原因を指します。"}, {"category": "用語解説（総復習）", "question": "特性や工程水準の変化の原因として検出・同定され得る因子を何というか。", "choices": ["偶然原因", "突き止められる原因", "標準原因", "一般原因"], "correct": 1, "explanation": "突き止められる原因は、検出・同定され得る因子で、取り除くべき原因を指します。"}, {"category": "用語解説（総復習）", "question": "「異常値（外れ値）」の説明として正しいものはどれか。", "choices": ["他と著しくかけ離れた観測値", "平均値のこと", "中央値のこと", "標準的な値のこと"], "correct": 0, "explanation": "異常値（外れ値）は、他の観測値と著しくかけ離れた観測値のことです。"}, {"category": "用語解説（総復習）", "question": "日本産業規格の略称はどれか。", "choices": ["ISO", "JIS", "IEC", "ANSI"], "correct": 1, "explanation": "日本産業規格はJIS（Japanese Industrial Standard）と呼ばれます。"}, {"category": "用語解説（総復習）", "question": "国際的な電気・電子技術分野の規格を発行する機関はどれか。", "choices": ["ISO", "IEC", "JIS", "ANSI"], "correct": 1, "explanation": "IEC（国際電気標準会議）は、電気・電子技術分野全般の国際規格を発行しています。"}, {"category": "用語解説（総復習）", "question": "ISOが対象とする分野として正しいものはどれか。", "choices": ["電気・電子技術分野全般", "電気・電子技術分野以外の国際規格", "日本国内規格のみ", "農業分野のみ"], "correct": 1, "explanation": "ISO（国際標準化機構）は、電気・電子技術分野以外の国際規格を発行しています。"}, {"category": "総合（総復習）", "question": "品質管理における「4M」の組合せとして正しいものはどれか。", "choices": ["人・機械設備・原材料・方法", "人・予算・時間・場所", "機械設備・広告・価格・納期", "人・利益・コスト・売上"], "correct": 0, "explanation": "4Mは、人（Man）・機械設備（Machine）・原材料（Material）・方法（Method）の組合せです。"}, {"category": "総合（総復習）", "question": "検査における「合格」「不合格」という言葉が使われるのはどのような場合か。", "choices": ["個々の製品を判定する場合", "ロットなどのまとまりを判定する場合", "常に個々の製品を判定する場合", "使われない"], "correct": 1, "explanation": "複数集まった一つのまとまり（ロット）に対する判定では、合格・不合格という言葉が使われます。"}, {"category": "総合（総復習）", "question": "職場で発生しやすい品質の問題として本文に挙げられていないものはどれか。", "choices": ["顧客からの苦情が絶えない", "作業者が同じミスを繰り返す", "売上げが予想を大きく上回る", "受入部品にロット不合格が多い"], "correct": 2, "explanation": "本文では顧客からの苦情や作業ミスの繰り返しなどが問題として挙げられていますが、売上げの好調は問題として挙げられていません。"}, {"category": "総合（総復習）", "question": "「重点指向」の考え方の説明として正しいものはどれか。", "choices": ["全ての問題に均等に取り組む", "より重要なものに焦点を絞って活動する", "効果の小さいものから優先して取り組む", "場当たり的に対応する"], "correct": 1, "explanation": "重点指向は、より重要なものに焦点を絞って活動していく考え方です。"}, {"category": "総合（総復習）", "question": "職場における「良い仕事」の考え方のうち、標準に従って安定した製品・サービスを生み出すことを何と呼ぶか。", "choices": ["改善活動", "維持活動", "課題活動", "検査活動"], "correct": 1, "explanation": "標準に従い、ばらつきのない製品・サービスを安定・継続して生み出す活動を維持活動と呼びます。"}, {"category": "総合（総復習）", "question": "現在の品質をより良くしたり原価を下げたりする活動を何というか。", "choices": ["維持活動", "改善活動", "検査活動", "標準化活動"], "correct": 1, "explanation": "仕事のやり方を変えるなどして品質や原価を改善する活動を改善活動と呼びます。"}, {"category": "総合（総復習）", "question": "維持活動と改善活動を合わせて何というか。", "choices": ["品質活動", "管理活動", "検査活動", "標準活動"], "correct": 1, "explanation": "維持活動と改善活動の両方を合わせて管理活動と呼びます。"}, {"category": "総合（総復習）", "question": "「課題」の定義として正しいものはどれか。", "choices": ["設定してある目標と現実との対策して克服すべきギャップ", "設定しようとする目標と現実とのギャップ", "検査結果のこと", "標準の一種"], "correct": 1, "explanation": "課題は、新たに設定しようとする目標や「ありたい姿」と現実とのギャップを指します。"}, {"category": "総合（総復習）", "question": "「問題」の定義として正しいものはどれか。", "choices": ["設定してある目標と現実との対策して克服すべきギャップ", "新たに設定する目標のこと", "標準そのもの", "検査基準のこと"], "correct": 0, "explanation": "問題は、既に設定してある目標と現実との、対策して克服する必要のあるギャップを指します。"}, {"category": "総合（総復習）", "question": "品質管理は何に始まり何に終わるといわれているか。", "choices": ["検査", "教育", "標準化", "管理"], "correct": 1, "explanation": "「品質管理は教育に始まり教育に終わる」といわれ、継続的な教育の重要性が説かれています。"}, {"category": "総合（総復習）", "question": "品質管理の考え方や手法はどのような組織に通用するとされているか。", "choices": ["製造業のみ", "どのような組織にも通用する", "サービス業のみ", "大企業のみ"], "correct": 1, "explanation": "品質管理の基本的な考え方や方法は、会社、病院、学校などどのような組織にも通用するとされています。"}, {"category": "総合（総復習）", "question": "「事実に基づく判断」が品質管理で重要とされる理由として正しいものはどれか。", "choices": ["過去の技術や経験、勘だけに頼らないようにするため", "感覚だけで判断するため", "上司の指示のみに従うため", "顧客の要望を無視するため"], "correct": 0, "explanation": "事実を観測値やデータとして正しく把握し、客観的な判断を下すことが大切とされています。"}, {"category": "総合（総復習）", "question": "データには常に何が含まれていると考えられるか。", "choices": ["誤差のみ", "ばらつき", "完全な正確さ", "一定の値のみ"], "correct": 1, "explanation": "同じ条件で測定してもデータには常にばらつきが含まれていると考えられます。"}, {"category": "総合（総復習）", "question": "労働安全衛生の目的として本文に挙げられているものはどれか。", "choices": ["職場における労働者の安全と健康を確保すること", "売上げを伸ばすこと", "広告を打つこと", "株価を上げること"], "correct": 0, "explanation": "労働安全衛生法では、労働者の安全と健康を確保することなどが目的として挙げられています。"}, {"category": "総合（総復習）", "question": "製品のライフサイクルにわたり使用者を含む全ての関係者の安全を保証する活動を何というか。", "choices": ["労働安全衛生", "製品安全", "品質保証", "検査"], "correct": 1, "explanation": "製品安全は、製品のライフサイクル全体で関係者の安全を保証する活動です。"}, {"category": "総合（総復習）", "question": "地球環境保全の活動が重視されるようになった背景として本文に挙げられているものはどれか。", "choices": ["産業革命以降の環境問題の顕在化", "品質管理の誕生", "QC検定の開始", "ISOの制定"], "correct": 0, "explanation": "産業革命を契機とした産業発展に伴い、オゾン層破壊や温暖化などの環境問題が顕在化してきたことが背景です。"}, {"category": "品質管理", "question": "品質管理の目的として本文が述べているのはどれか。", "choices": ["顧客・社会のニーズを満たす品質を効果的・効率的に達成すること", "広告費を削減すること", "競合他社を排除すること", "株主配当を増やすこと"], "correct": 0, "explanation": "品質管理の目的は、製品・サービスの安全性・操作性・信頼性・経済性・環境保全性など多岐にわたるニーズを満たすことです。"}, {"category": "品質管理", "question": "「ねらいの品質」を設定する際に用いられる考え方はどれか。", "choices": ["お客様のあるべき姿・ありたい姿を明確に設定すること", "製造コストの最小化のみを考えること", "過去の実績のみを踏襲すること", "競合製品を模倣すること"], "correct": 0, "explanation": "VOCやお客様を取り巻く環境の分析を通じて、あるべき姿・ありたい姿を明確に設定することを「ねらいの品質を設定する」といいます。"}, {"category": "管理", "question": "PDCAサイクルの「D（Do）」の説明として正しいものはどれか。", "choices": ["計画に基づいて準備を進め、実施し、その状況をフォローすること", "結果を評価すること", "対策を講じること", "目標を設定すること"], "correct": 0, "explanation": "ドゥ（実施する）は、計画を確実に実行するとともに、実施状況を観察・フォローすることです。"}, {"category": "事実に基づく判断", "question": "データ 6, 8, 10, 12 の平均はいくつか。", "choices": ["8", "9", "10", "11"], "correct": 1, "explanation": "平均＝(6+8+10+12)÷4＝36÷4＝9 です。"}, {"category": "事実に基づく判断", "question": "データ 15, 18, 20 の範囲Rはいくつか。", "choices": ["3", "5", "20", "33"], "correct": 1, "explanation": "範囲R＝最大値－最小値＝20－15＝5 です。"}, {"category": "QC七つ道具｜総論", "question": "QC七つ道具として選ばれた七つの手法に含まれるものはどれか。", "choices": ["親和図", "連関図", "グラフ／管理図", "系統図"], "correct": 2, "explanation": "QC七つ道具は、パレート図・特性要因図・ヒストグラム・グラフ／管理図・チェックシート・散布図・層別の7つです。"}, {"category": "QC七つ道具｜パレート図", "question": "パレート図の縦軸に用いられることが多いものはどれか（累積百分率とあわせて）。", "choices": ["不適合品数などの件数", "気温", "時間", "距離"], "correct": 0, "explanation": "パレート図では、不適合品数などの件数を左側の縦軸に、累積百分率を右側の縦軸に示すのが一般的です。"}, {"category": "QC七つ道具｜グラフ・管理図", "question": "Xバー-R管理図が表す内容として正しいものはどれか。", "choices": ["特性値の平均と範囲の状態", "特性値の相関関係", "内訳の構成比率", "出現頻度の累積"], "correct": 0, "explanation": "Xバー-R管理図は、特性値の平均（Xバー）と範囲（R）の状態を示す代表的な管理図です。"}, {"category": "企業活動の基本｜企業生活のマナー・規則", "question": "職場で敬語を用いる相手として本文が挙げているのはどれか。", "choices": ["上司や先輩", "取引先を除く全員", "自分より年下の人のみ", "誰にも使わない"], "correct": 0, "explanation": "上司や先輩に敬語で接することはもちろん、年下の人にも「さん」付けで呼ぶなど言葉遣いに気をつけることが大切です。"}, {"category": "企業活動の基本｜安全衛生", "question": "「300運動」という呼び方は何に由来するか。", "choices": ["300件の傷害のない事故（ヒヤリ・ハット）", "300件の重大な傷害", "300人の安全担当者", "300日間の無災害記録"], "correct": 0, "explanation": "ハインリッヒの法則における300件の傷害のない事故（ヒヤリ・ハット）に由来して300運動と呼ばれます。"}, {"category": "用語解説（総復習）", "question": "「サンプルサイズ」の説明として正しいものはどれか。", "choices": ["一つのサンプルの中のサンプリング単位の数", "母集団全体の大きさ", "検査基準の数", "規格の種類の数"], "correct": 0, "explanation": "サンプルサイズ（サンプルの大きさ）は、一つのサンプルの中に含まれるサンプリング単位の数です。"}, {"category": "用語解説（総復習）", "question": "「計測」の説明として正しいものはどれか。", "choices": ["特定の目的をもって測定の方法・手段を考究し、実施し、目的を達成させること", "単に数値を記録するだけの行為", "標準を作ること", "検査に合格すること"], "correct": 0, "explanation": "計測は、特定の目的をもって測定の方法及び手段を考究し、実施し、その結果を用いて所期の目的を達成させることです。"}, {"category": "用語解説（総復習）", "question": "「測定」の説明として正しいものはどれか。", "choices": ["ある量を基準として用いる量と比較し、数値又は符号で表すこと", "目的を達成すること", "標準を作ること", "検査に合格すること"], "correct": 0, "explanation": "測定は、ある量を基準となる量と比較し、数値又は符号を用いて表すことです。"}, {"category": "改善", "question": "改善という言葉が海外でも通じる、日本発の表記はどれか。", "choices": ["KAIZEN", "QCD", "PDCA", "5S"], "correct": 0, "explanation": "改善はKAIZENと書かれて海外でも通じるほど、日本で進化・発展した活動です。"}, {"category": "標準・標準化", "question": "標準化することで期待できる効果として本文に挙げられていないものはどれか。", "choices": ["品質の安定", "作業ミスの防止", "能率の向上", "従業員数の増加"], "correct": 3, "explanation": "標準化により、品質の安定、作業ミスの防止、能率の向上、作業の安定化などが期待できるとされています。"}, {"category": "工程（プロセス）", "question": "プロセスの説明として正しいものはどれか。", "choices": ["インプットに価値を加えてアウトプットを作る活動", "検査を行う場所のこと", "標準を作成すること", "製品を廃棄すること"], "correct": 0, "explanation": "プロセスは、インプットにある価値を加えてアウトプットを作る活動と考えられます。"}, {"category": "事実に基づく判断", "question": "品質特性を計測機器で測るもの以外に、人間の五感によって計測・判定する検査を何というか。", "choices": ["官能検査", "破壊検査", "全数検査", "抜取検査"], "correct": 0, "explanation": "官能検査は、手触り・味覚・音・視覚など人間の五感によって計測・判定する検査です。"}, {"category": "QC七つ道具｜散布図", "question": "散布図を見る際に注意すべきこととして本文に挙げられていないものはどれか。", "choices": ["点の並び方に何らかの傾向があるか", "その傾向は直線的か曲線的か", "異常値はないか", "色使いが美しいか"], "correct": 3, "explanation": "散布図を見る際は、傾向の有無や形、異常値や層別の必要性などに注意しますが、色使いの美しさは関係ありません。"}, {"category": "QC七つ道具｜層別", "question": "層別を行うことで得られる効果として正しいものはどれか。", "choices": ["異なる層の間の分布の違いなど、ばらつきの原因を探る手がかりが得られる", "データ量が減少する", "検査が不要になる", "標準が不要になる"], "correct": 0, "explanation": "層別は、異なる層の間の分布の違いや層内の分布を調べ、ばらつきの原因を探るために役立ちます。"}, {"category": "企業活動の基本｜報告・連絡・相談", "question": "報告・連絡・相談がきちんとされていると得られる効果として正しいものはどれか。", "choices": ["意思疎通や良好なコミュニケーションが図られ仕事の効率が上がる", "作業時間が長くなる", "コストが増加する", "品質が低下する"], "correct": 0, "explanation": "報告・連絡・相談がきちんとされていると、良好なコミュニケーションにより仕事の効率が上がるとされています。"}, {"category": "企業活動の基本｜5S", "question": "5Sにおいて、しつけ（躾）の代わりに用いられることがある言葉は何か。", "choices": ["習慣", "規則", "命令", "法律"], "correct": 0, "explanation": "しつけ（躾）というと上から指示されたような気持ちになるため、代わりに「習慣」を入れて5Sとする場合があります。"}, {"category": "企業活動の基本｜三現主義・5ゲン主義", "question": "三現主義における「現物」の意味として正しいものはどれか。", "choices": ["それがどんな製品（品物）に起きているか", "それが起きているのはどこか", "それがどんな状況になっているか", "それがいつ起きたか"], "correct": 0, "explanation": "現物とは、それが「どんな製品（品物）」に起きているかを意味します。"}, {"category": "企業活動の基本｜三現主義・5ゲン主義", "question": "三現主義における「現実」の意味として正しいものはどれか。", "choices": ["それがどんな状況になっているか", "それがどんな製品に起きているか", "それが起きている場所", "それが起きた時刻"], "correct": 0, "explanation": "現実とは、それが「どんな状況になっているか（実際になっている状況）」を意味します。"}, {"category": "事実に基づく判断", "question": "データ 30, 34, 36, 40, 50 のメディアン（中央値）はいくつか。", "choices": ["34", "36", "38", "40"], "correct": 1, "explanation": "5個のデータを大きさ順に並べたとき中央にくる値は36です。"}, {"category": "品質管理", "question": "品質管理において、ねらいの品質を実現するためにまず把握すべきものはどれか。", "choices": ["現状の姿として実際に提供されている製品・サービスの状況", "競合他社の株価", "従業員の給与水準", "広告予算"], "correct": 0, "explanation": "ねらいの品質を実現するには、まず実際に提供されている製品やサービスの状況を「現状の姿」として把握する必要があります。"}, {"category": "品質管理", "question": "品質に関する問題や課題が生じるのはどのような場合か。", "choices": ["現状の姿とねらいの品質との間に明らかな差（ギャップ）がある場合", "売上げが目標を上回った場合", "従業員が増えた場合", "広告が成功した場合"], "correct": 0, "explanation": "現状の姿とねらいの品質との間に明らかな差があれば、そこに品質に関する問題や課題が存在することになります。"}, {"category": "品質管理", "question": "「品質」の要素として本文に挙げられているものはどれか。", "choices": ["機能、性能、使用性、経済性、信頼性、安全性、環境保全性など", "為替レートと株価のみ", "広告費のみ", "従業員数のみ"], "correct": 0, "explanation": "品質の要素には機能、性能、使用性、入手性、経済性、信頼性、安全性、環境保全性などがあります。"}, {"category": "品質管理", "question": "無形のサービス業などで「品質」の同義語として用いられることがある言葉は何か。", "choices": ["質", "量", "価格", "規格"], "correct": 0, "explanation": "品質という用語がなじまない無形のものには、同義語として“質”（仕事の質、医療の質など）を用いる場合があります。"}, {"category": "管理", "question": "PDCAの用語が確立される前にあった、seeを含む考え方はどれか。", "choices": ["plan-do-see", "plan-do-check", "act-do-plan", "see-do-plan"], "correct": 0, "explanation": "PDCAの用語が確立される前は、plan-do-seeという類似の考え方がありました。"}, {"category": "管理", "question": "plan-do-seeのseeがcheckとactに分解された理由として本文が挙げているのはどれか。", "choices": ["seeが「結果をただ眺めているだけ」と誤解されないようにするため", "作業を簡略化するため", "コストを削減するため", "標準を廃止するため"], "correct": 0, "explanation": "seeの意味が「結果をただ眺めているだけ」と誤解されないよう、問題の是正や再発防止を強調してcheckとactに分解されました。"}, {"category": "管理", "question": "PDCAサイクルの提唱に関連する人物として本文に挙げられているのは誰か。", "choices": ["デミング博士", "アインシュタイン", "エジソン", "ドラッカー"], "correct": 0, "explanation": "PDCAは、デミング博士（W.E. Deming）による設計－製造－検査・販売－サービス・調査のサイクルをもとに拡張されたものです。"}, {"category": "管理", "question": "Doの実施期間が長い場合や実施事項が複数ある場合に必要となることは何か。", "choices": ["Doの中で小さなPDCAを何回か回すこと", "計画を放棄すること", "チェックを省略すること", "標準を作らないこと"], "correct": 0, "explanation": "Doの実施期間が長い場合などは、Doの中で小さなPDCAを何回か回すことも必要となります。"}, {"category": "事実に基づく判断", "question": "データ 12, 15, 18, 21, 24 の平均はいくつか。", "choices": ["16", "18", "20", "22"], "correct": 1, "explanation": "平均＝(12+15+18+21+24)÷5＝90÷5＝18 です。"}, {"category": "事実に基づく判断", "question": "データ 7, 11, 9, 13 のメディアン（中央値）はいくつか。", "choices": ["9", "10", "11", "13"], "correct": 1, "explanation": "大きさ順に並べると7,9,11,13。中央2つの平均は(9+11)÷2＝10です。"}, {"category": "事実に基づく判断", "question": "データ 45, 50, 55, 60, 100 の範囲Rはいくつか。", "choices": ["15", "45", "55", "100"], "correct": 2, "explanation": "範囲R＝最大値－最小値＝100－45＝55 です。"}, {"category": "事実に基づく判断", "question": "データ 8, 8, 8, 8 の範囲Rはいくつか。", "choices": ["0", "2", "4", "8"], "correct": 0, "explanation": "全てのデータが同じ値の場合、範囲R＝最大値－最小値＝0 になります。"}, {"category": "事実に基づく判断", "question": "5個のデータの合計が100のとき、平均はいくつか。", "choices": ["10", "20", "50", "100"], "correct": 1, "explanation": "平均＝データの合計÷データの個数＝100÷5＝20 です。"}, {"category": "事実に基づく判断", "question": "データ数が偶数個のとき、メディアンはどのように求めるか。", "choices": ["中央に位置する値をそのまま用いる", "中央に位置する二つのデータの平均を求める", "最大値を用いる", "最小値を用いる"], "correct": 1, "explanation": "データの数が偶数個の場合、メディアンは中央に位置する二つのデータの平均となります。"}, {"category": "事実に基づく判断", "question": "データ数が奇数個のとき、メディアンはどのように求めるか。", "choices": ["中央に位置する値をそのまま用いる", "前後2つの平均を求める", "最大値と最小値の平均を求める", "データの合計を用いる"], "correct": 0, "explanation": "データの数が奇数個の場合、メディアンは中央に位置する値そのものです。"}, {"category": "QC七つ道具｜総論", "question": "QC七つ道具の各手法に共通して大切なこととして本文が述べているのはどれか。", "choices": ["図示された情報をしっかり読み取り、次に何をすべきかを検討すること", "図をできるだけ複雑にすること", "データをできるだけ多く集めることのみ", "専門家に丸投げすること"], "correct": 0, "explanation": "得られたデータを図や表にまとめるだけでなく、そこから何が言えるかを考えることが大切です。"}, {"category": "QC七つ道具｜総論", "question": "QC七つ道具のうち、日本産業規格（JIS）などの定義を引用して本文が紹介している手法の数はいくつか。", "choices": ["5つ", "6つ", "7つ", "8つ"], "correct": 2, "explanation": "QC七つ道具として選ばれた手法は、パレート図、特性要因図、ヒストグラム、グラフ／管理図、チェックシート、散布図、層別の7つです。"}, {"category": "QC七つ道具｜パレート図", "question": "図2.4のパレート図の例で、不適合品数の合計の約70％を占めているとされる2つの不適合項目はどれか。", "choices": ["歪みとキズ", "ねじれとそり", "キズと曲がり", "そりと歪み"], "correct": 0, "explanation": "本文の図2.4の例では、「歪み」と「キズ」による不適合品数の合計が全体の約70％を占めています。"}, {"category": "QC七つ道具｜パレート図", "question": "パレート図の縦軸（右側）に示されることが多いものはどれか。", "choices": ["累積百分率（％）", "気温", "時間", "距離"], "correct": 0, "explanation": "パレート図では、データ数の多い項目から累積して求めた累積百分率（％）を右側の縦軸に示すのが一般的です。"}, {"category": "QC七つ道具｜特性要因図", "question": "特性要因図の矢印の先端（右端）に置かれるものは何か。", "choices": ["特性（結果を表すもの）", "要因のみ", "4Mのみ", "背骨のみ"], "correct": 0, "explanation": "特性要因図の矢印の先端には、特性（結果を表すもの）を置きます。"}, {"category": "QC七つ道具｜特性要因図", "question": "特性要因図における「背骨」とは何を指すか。", "choices": ["中央を貫く太い矢印の線", "大骨のみ", "小骨のみ", "特性のみ"], "correct": 0, "explanation": "特性要因図の構造では、中央を貫く太い矢印の線を「背骨」といいます。"}, {"category": "QC七つ道具｜ヒストグラム", "question": "ヒストグラムとともに計算して分布の様子を観察する統計量として本文に挙げられていないものはどれか。", "choices": ["データ数n", "平均", "範囲R", "為替レート"], "correct": 3, "explanation": "ヒストグラムとともに、データ数n、平均、最大値・最小値、範囲Rなどを計算して分布の様子を観察します。"}, {"category": "QC七つ道具｜ヒストグラム", "question": "ヒストグラムの一般形の特徴として正しいものはどれか。", "choices": ["左右対称で中心付近が最も多い", "二山がある", "端が切れている", "度数が交互に増減する"], "correct": 0, "explanation": "一般形は左右対称で、中心付近が最も多く、中心から離れるに従って徐々に少なくなる形です。"}, {"category": "QC七つ道具｜ヒストグラム", "question": "ヒストグラムの離れ小島形の特徴として正しいものはどれか。", "choices": ["飛び離れた山をもつもの", "左右対称のもの", "端が切れているもの", "度数が交互に増減するもの"], "correct": 0, "explanation": "離れ小島形は、異なった分布からのデータが混入している場合に現れる、飛び離れた山をもつ形です。"}, {"category": "QC七つ道具｜グラフ・管理図", "question": "管理図の説明としてJISの定義に近いものはどれか。", "choices": ["連続した観測値又は群のある統計量の値を時間順又はサンプル番号順に打点し、管理限界線をもつ図", "内訳の構成比率を示す図", "二つの特性の関係を示す図", "累積和を示す図"], "correct": 0, "explanation": "管理図は、連続した観測値又は群のある統計量の値を時間順又はサンプル番号順に打点し、管理限界線をもつ図と定義されています。"}, {"category": "QC七つ道具｜チェックシート", "question": "チェックシートに記録する際、簡単に記録できるように用いる工夫として本文に挙げられているものはどれか。", "choices": ["○、×、✔マークなどの記号", "長文での記述のみ", "写真のみ", "音声記録のみ"], "correct": 0, "explanation": "チェックシートでは、○、×、✔マークなどの記号で簡単に記録できるように工夫します。"}, {"category": "QC七つ道具｜散布図", "question": "散布図を見るときに注意すべきこととして本文に挙げられているものはどれか。", "choices": ["点の集まりがあれば層別を行うべきか検討すること", "データをすべて削除すること", "軸を必ず対数にすること", "色を統一すること"], "correct": 0, "explanation": "散布図では点の集まりの有無を確認し、あれば層別を行うべきか検討することが必要です。"}, {"category": "QC七つ道具｜層別", "question": "層別を行う際に大切なこととして本文が述べているのはどれか。", "choices": ["目的とする特性に関して層内がより均一になるように層を設定すること", "層の数をできるだけ多くすること", "層ごとにデータ数を揃えないこと", "層別は行わない方がよいこと"], "correct": 0, "explanation": "層別では、目的とする特性に関して層内がより均一になるように層を設定することが大切です。"}, {"category": "企業活動の基本｜報告・連絡・相談", "question": "報告・連絡・相談を行う際に共通して大切なこととして本文が述べているのはどれか。", "choices": ["5W1Hでポイントを押さえ、正確・簡潔・明瞭かつ具体的にすること", "できるだけ曖昧な表現を使うこと", "口頭のみで済ませること", "相手の都合を考えないこと"], "correct": 0, "explanation": "報告・連絡・相談はいずれも5W1Hでポイントを押さえ、正確・簡潔・明瞭かつ具体的にすることが必要です。"}, {"category": "企業活動の基本｜報告・連絡・相談", "question": "報告・連絡・相談を表す言葉「ほうれんそう」の由来として正しいものはどれか。", "choices": ["報告・連絡・相談の頭文字を組み合わせた略語", "野菜のほうれん草に由来する専門用語", "英語表記の頭文字", "QC七つ道具の一つ"], "correct": 0, "explanation": "報告・連絡・相談の三つを略して「ほうれんそう（報連相）」と呼びます。"}, {"category": "企業活動の基本｜5W1H", "question": "5W1Hの「What」は何を意味するか。", "choices": ["何を、何について（対象）", "誰が", "いつ", "なぜ"], "correct": 0, "explanation": "Whatは「何を、何について」（対象）を意味します。"}, {"category": "企業活動の基本｜5W1H", "question": "5W1Hが重要とされる理由として本文が述べているのはどれか。", "choices": ["特に印象の強い要素だけに目が行きやすく、行動の見逃しを防ぐため", "法律で義務付けられているため", "コストが下がるため", "誰でも簡単に覚えられるため"], "correct": 0, "explanation": "人は特定の要素だけに目が行きやすいため、5W1Hの視点から見つめ直しヌケ・オチ・モレを防ぐことが大切とされています。"}, {"category": "企業活動の基本｜三現主義・5ゲン主義", "question": "三現主義における「現場」の意味として正しいものはどれか。", "choices": ["それが起きているのはどこか、その場所に行くこと", "それがどんな製品に起きているか", "それがどんな状況になっているか", "それが誰の責任か"], "correct": 0, "explanation": "現場とは、それが起きているのは「どこで？」を意味し、その場所に行って（現地）ということも意味します。"}, {"category": "企業活動の基本｜三現主義・5ゲン主義", "question": "5ゲン主義が提唱された理由として本文が述べているのはどれか。", "choices": ["原理・原則に照らし合わせることで問題点が浮き彫りになり事実をよく見ることができるため", "コストを削減するため", "検査を省略するため", "標準を廃止するため"], "correct": 0, "explanation": "三現主義の実践に原理・原則を組み合わせることで、ある種の基準をもって物事を見られるようになるとされています。"}, {"category": "企業活動の基本｜企業生活のマナー・規則", "question": "時間厳守について本文が述べている考え方として正しいものはどれか。", "choices": ["間に合えばよいという考えではなく、常に指定の時間よりも先にという意識をもつこと", "時間ぎりぎりに到着すればよいこと", "休憩時間と就業時間を区別しなくてよいこと", "遅刻しても連絡すれば問題ないこと"], "correct": 0, "explanation": "間に合えばよいという考えではなく、常に指定の時間よりも先にという意識をもって行動することが大切とされています。"}, {"category": "企業活動の基本｜企業生活のマナー・規則", "question": "身だしなみについて本文が述べている注意点として正しいものはどれか。", "choices": ["清潔で相手に不快感を与えないこと（おしゃれとは異なる）", "流行のファッションを取り入れること", "高価な服を着ること", "個性を強く出すこと"], "correct": 0, "explanation": "身だしなみで注意すべき点は、清潔で相手に不快感を与えないという点で、おしゃれとは違うとされています。"}, {"category": "企業活動の基本｜5S", "question": "5Sにおいて、セーフティやスピードなどの言葉が使われる場合があるのはどの文字に代わる場合か。", "choices": ["しつけ（躾）", "整理", "整頓", "清掃"], "correct": 0, "explanation": "しつけ（躾）の代わりに、職場によってはセーフティやスピードなどのSを用いることがあります。"}, {"category": "企業活動の基本｜5S", "question": "5Sが「全ての仕事の基本」とされる理由として本文が述べているのはどれか。", "choices": ["職場において徹底されるべき内容を示しているため", "法律で義務付けられているため", "コストがかからないため", "検査の代わりになるため"], "correct": 0, "explanation": "5Sは、職場において徹底されるべき内容を示しており、全ての仕事の基本といえるとされています。"}, {"category": "企業活動の基本｜安全衛生", "question": "「KY活動」の「KY」は何のローマ字表記の頭文字か。", "choices": ["危険（Kiken）予知（Yochi）", "健康（Kenko）予防（Yobo）", "経営（Keiei）指標（Yoshihyou）", "危機（Kiki）予測（Yosoku）"], "correct": 0, "explanation": "KYは、危険（Kiken）予知（Yochi）活動（Katsudo）のローマ字表記の頭文字です。"}, {"category": "企業活動の基本｜安全衛生", "question": "職場の安全週間で行われる活動として本文に挙げられていないものはどれか。", "choices": ["日ごとに安全点検の項目を決めて全員参加で点検すること", "危険が予想される箇所への対策", "従業員の安全に対する考えを教育する行事", "株主総会の開催"], "correct": 3, "explanation": "安全週間では日ごとの安全点検や危険箇所への対策、安全教育の行事などが行われますが、株主総会は含まれません。"}, {"category": "用語解説（総復習）", "question": "「サンプル（試料、標本）」の説明として正しいものはどれか。", "choices": ["母集団の情報を得るために母集団から取られた一つ以上のサンプリング単位", "母集団全体のこと", "検査基準のこと", "標準のこと"], "correct": 0, "explanation": "サンプルは、母集団の情報を得るために母集団から取られた一つ以上のサンプリング単位のことです。"}, {"category": "用語解説（総復習）", "question": "「特性」の説明として正しいものはどれか。", "choices": ["特徴付けている性質", "検査の結果のこと", "標準のこと", "規格のこと"], "correct": 0, "explanation": "特性は「特徴付けている性質」と定義され、機能的・感覚的・時間的など様々な種類があります。"}, {"category": "用語解説（総復習）", "question": "「点検項目」の説明として正しいものはどれか。", "choices": ["管理項目のうち、原因をチェックする項目", "結果をチェックする項目のみ", "検査基準のこと", "標準のこと"], "correct": 0, "explanation": "点検項目は、管理項目のうち特に原因（要因）をチェックする項目を指す場合の言い方です。"}, {"category": "総合（総復習）", "question": "職場における管理活動の真のねらいとして本文が述べているのはどれか。", "choices": ["PDCAやSDCAのサイクルを継続的に回すことによって仕事の仕方をレベルアップさせていくこと", "コストを最小化すること", "従業員を減らすこと", "検査を省略すること"], "correct": 0, "explanation": "PDCAやSDCAのサイクルを継続的に回すことによって、仕事の仕方をレベルアップさせていくことが管理活動の真のねらいです。"}, {"category": "総合（総復習）", "question": "QCストーリーの手順が固定されたものではない理由として本文が述べているのはどれか。", "choices": ["改善の対象・範囲などによってステップが創意工夫され進化を続けているため", "法律で定められた手順のため", "毎年変更が義務付けられているため", "国際規格で固定されているため"], "correct": 0, "explanation": "QCストーリーの手順は、改善の対象や範囲によってさまざまに創意工夫されており、今後も進化を続けるものと考えられています。"}, {"category": "総合（総復習）", "question": "本文で紹介されている「代表的な品質管理の手法」に共通する目的として正しいものはどれか。", "choices": ["データを収集・分析し、事実に基づいた判断や改善につなげること", "製品の価格を決定すること", "従業員の評価を行うこと", "広告戦略を立てること"], "correct": 0, "explanation": "QC七つ道具などの手法は、データを収集・分析し、事実に基づいた判断や改善につなげることを目的としています。"}, {"category": "品質管理", "question": "「良いものとは良い品質、すなわちお客様に満足いただける製品やサービスのこと」という考え方が求めるものは何か。", "choices": ["ばらつきがないようにすること", "価格を高くすること", "生産量を減らすこと", "広告を増やすこと"], "correct": 0, "explanation": "良い品質の製品やサービスは、お客様に等しく満足いただくためばらつきがないようにすることが求められます。"}, {"category": "品質管理", "question": "品質のばらついた製品やサービスが同じ値段で提供されると、どのような問題が生じるか。", "choices": ["購入したお客様に不公平さが生じる", "品質が向上する", "コストが下がる", "検査が不要になる"], "correct": 0, "explanation": "品質のばらついた製品が同じ値段で提供されると、購入したお客様に不公平さが生じるとされています。"}, {"category": "管理", "question": "職場で行う品質管理において特に重要とされる3つの要素は何か。", "choices": ["計画とその実施、そして改善", "広告と販売、そして回収", "検査と廃棄、そして再生産", "予算と人員、そして評価"], "correct": 0, "explanation": "職場で行う品質管理では、計画とその実施、そして改善が特に重要であるとされています。"}, {"category": "企業活動の基本｜製品とサービス・QCD＋PSME", "question": "QCD＋PSMEにおける管理項目の例として、Qの分類に該当するものはどれか。", "choices": ["工程別の不適合品率", "職場の予算と実績の差異", "納期の達成状況", "二酸化炭素の排出量"], "correct": 0, "explanation": "Q（品質）の管理項目の例として、工程別の不適合品率や作業者別の不適合品発生件数が挙げられています。"}, {"category": "企業活動の基本｜製品とサービス・QCD＋PSME", "question": "QCD＋PSMEにおける管理項目の例として、Sの分類に該当するものはどれか。", "choices": ["事故の発生件数", "部品別コストダウン目標の達成率", "納期の達成状況", "欠勤率"], "correct": 0, "explanation": "S（安全）の管理項目の例として、事故の発生件数や無災害継続稼働時間が挙げられています。"}, {"category": "改善", "question": "問題解決型QCストーリーのステップに含まれるものはどれか。", "choices": ["要因解析（因果関係の把握）", "広告戦略の立案", "株主総会の開催", "人事異動の実施"], "correct": 0, "explanation": "問題解決型QCストーリーには、現状把握、要因解析、対策の検討・立案などのステップが含まれます。"}, {"category": "改善", "question": "問題解決型QCストーリーの最後のステップとして本文に挙げられているのはどれか。", "choices": ["反省と今後の対応", "テーマ・目標の選定", "効果の確認のみ", "対策の実施のみ"], "correct": 0, "explanation": "本文の図1.2に示された問題解決型QCストーリーの最後のステップは「反省と今後の対応」です。"}, {"category": "事実に基づく判断", "question": "データ 100, 120, 140, 160, 180 の平均はいくつか。", "choices": ["120", "140", "150", "160"], "correct": 1, "explanation": "平均＝(100+120+140+160+180)÷5＝700÷5＝140 です。"}, {"category": "事実に基づく判断", "question": "データ 2, 3, 5, 7, 11, 13 のメディアン（中央値）はいくつか。", "choices": ["5", "6", "7", "8"], "correct": 1, "explanation": "6個のデータを大きさ順に並べると2,3,5,7,11,13。中央2つの平均は(5+7)÷2＝6です。"}, {"category": "事実に基づく判断", "question": "データ 90, 95, 98, 99, 100 の範囲Rはいくつか。", "choices": ["5", "9", "10", "100"], "correct": 2, "explanation": "範囲R＝最大値－最小値＝100－90＝10 です。"}, {"category": "標準・標準化", "question": "標準化された作業を行っていても問題が発生する場合として本文に挙げられているものはどれか。", "choices": ["標準と異なるやり方で仕事をした場合", "標準通りに仕事をした場合のみ", "検査を省略した場合のみ", "広告を変更した場合のみ"], "correct": 0, "explanation": "標準と異なるやり方で仕事をした場合や、標準自体に適切でない部分があった場合などに問題が発生することがあります。"}, {"category": "標準・標準化", "question": "「規格」に含まれるものとして本文が挙げているものはどれか。", "choices": ["部品規格、設計規格、製図規格、材料規格", "財務規格のみ", "人事規格のみ", "広告規格のみ"], "correct": 0, "explanation": "規格には、部品規格、設計規格、製図規格のほか、材料規格などが含まれます。"}, {"category": "工程（プロセス）", "question": "プロセスにおいて、加工のプロセスの場合のインプットとして本文が挙げているものはどれか。", "choices": ["原材料", "広告費", "従業員の給与", "株価"], "correct": 0, "explanation": "加工のプロセスの場合、原材料がインプットになり、加工後の製品がアウトプットになります。"}, {"category": "工程（プロセス）", "question": "スタッフ業務におけるプロセスのアウトプットの例として本文が挙げているものはどれか。", "choices": ["作成した資料や分析した情報", "原材料", "機械設備", "広告"], "correct": 0, "explanation": "スタッフの業務では、作成した資料や分析した情報などがアウトプットになるとされています。"}, {"category": "事実に基づく判断", "question": "A高校の全生徒から30人をサンプリングする例で、学年に偏りなく抽出するための方法として本文が挙げているのはどれか。", "choices": ["学年別に層別してサンプリングすること", "全員を対象にすること", "1年生だけを対象にすること", "無作為に選ばず成績順に選ぶこと"], "correct": 0, "explanation": "学年に偏りなくランダムに抽出するため、学年別に層別してサンプリングすることが一つの方法として挙げられています。"}, {"category": "事実に基づく判断", "question": "データのばらつきの程度を示す代表的な尺度として、4級で基本となるものはどれか。", "choices": ["範囲R（最大値－最小値）", "平均値そのもの", "データの個数", "検査基準"], "correct": 0, "explanation": "4級では、ばらつきの程度を示す基本的な尺度として範囲R（最大値－最小値）を用います。"}, {"category": "QC七つ道具｜総論", "question": "QC七つ道具のうち、対応のある二つの特性間の関係を調べる手法はどれか。", "choices": ["散布図", "チェックシート", "層別", "パレート図"], "correct": 0, "explanation": "散布図は、対応のある（対になっている）二つの特性間の相互の関係を調べるのに使われます。"}, {"category": "企業活動の基本｜企業生活のマナー・規則", "question": "報告・連絡・相談がきちんとされていない場合に生じる問題として本文の趣旨に合うものはどれか。", "choices": ["意思疎通や良好なコミュニケーションが図られず仕事の効率が下がる", "品質が向上する", "コストが下がる", "納期が短縮される"], "correct": 0, "explanation": "報告・連絡・相談がきちんとされていないと、意思疎通が図られず仕事の効率が下がる可能性があります。"}, {"category": "企業活動の基本｜三現主義・5ゲン主義", "question": "5ゲン主義の「ゲン」の表記について本文が述べていることはどれか。", "choices": ["カタカナを使うのが一般的である", "漢字を使うのが一般的である", "ひらがなを使うのが一般的である", "英語表記のみが用いられる"], "correct": 0, "explanation": "5ゲン主義の「ゲン」はカタカナを使うのが一般的であると本文に述べられています。"}, {"category": "企業活動の基本｜安全衛生", "question": "製品のライフサイクルとは何を指すか。", "choices": ["製品の購入から使用・廃棄されるまでの期間", "製品の製造にかかる時間のみ", "検査にかかる時間のみ", "広告期間のみ"], "correct": 0, "explanation": "製品のライフサイクルとは、製品の購入から使用・廃棄されるまでの期間を指します。"}, {"category": "用語解説（総復習）", "question": "「問題解決」の定義として正しいものはどれか。", "choices": ["問題に対して、原因を特定し、対策し、確認する一連の活動", "目標を新たに設定する活動のみ", "検査を行う活動のみ", "標準を作成する活動のみ"], "correct": 0, "explanation": "問題解決は、問題に対して原因を特定し、対策し、確認する一連の活動と定義されています。"}, {"category": "用語解説（総復習）", "question": "「課題達成」の定義として正しいものはどれか。", "choices": ["新たな目標を設定し、それを達成するためのプロセスやシステムを構築し目標を達成する一連の活動", "既存の問題を検査する活動のみ", "標準を廃止する活動のみ", "広告を行う活動のみ"], "correct": 0, "explanation": "課題達成は、新たな目標を設定し、それを達成するためのプロセス・システムを構築し目標を達成する一連の活動です。"}, {"category": "用語解説（総復習）", "question": "「改善（継続的改善）」の定義として正しいものはどれか。", "choices": ["目標を現状より高い水準に設定して問題や課題の解決・達成を繰り返し行う活動", "現状維持のみを目的とする活動", "検査のみを行う活動", "広告のみを行う活動"], "correct": 0, "explanation": "改善は、目標を現状より高い水準に設定し、問題解決又は課題達成を繰り返し行う活動と定義されています。"}, {"category": "用語解説（総復習）", "question": "「ブレーンストーミング」を提唱した人物として本文に挙げられているのは誰か。", "choices": ["オズボーン（A.F. Osborn）", "デミング博士", "ハインリッヒ", "吉澤正"], "correct": 0, "explanation": "ブレーンストーミングは、米国のオズボーン（A.F. Osborn）が提唱した方法です。"}, {"category": "用語解説（総復習）", "question": "ブレーンストーミングにおける「批判厳禁」というルールの意味として正しいものはどれか。", "choices": ["良し悪しの批判はしないこと", "積極的に批判すること", "匿名で発言すること", "多数決で決めること"], "correct": 0, "explanation": "ブレーンストーミングの四つのルールの一つに「良し悪しの批判はしない（批判厳禁）」があります。"}, {"category": "総合（総復習）", "question": "本手引きにおいて「品質管理」の英語表記として挙げられているのはどれか。", "choices": ["Quality Control", "Quality Assurance", "Quality Standard", "Quality Inspection"], "correct": 0, "explanation": "品質管理（QC）はQuality Controlの略で、本文の索引にもQuality Controlの表記が見られます。"}, {"category": "管理", "question": "「管理項目」の説明として正しいものはどれか。", "choices": ["目標の達成を管理するために評価尺度として選定した項目", "検査で使う器具のこと", "広告費の予算のこと", "従業員の人数のこと"], "correct": 0, "explanation": "管理項目は、活動の良し悪しを評価するために用意するものさし（評価尺度）として選定した項目です。"}, {"category": "管理", "question": "管理項目のうち、結果系の管理項目に対して、要因系の管理項目を特に何ということがあるか。", "choices": ["点検項目", "検査項目", "規格項目", "標準項目"], "correct": 0, "explanation": "管理項目には結果系の管理項目と要因系の管理項目があり、後者は特に点検項目と呼ぶことがあります。"}, {"category": "管理", "question": "一般的に、上位職者と下位職者が用いる管理項目の傾向として本文が述べているのはどれか。", "choices": ["上位職者は結果をチェックする管理項目、下位職者は要因をチェックする管理項目を用いる", "上位職者は要因、下位職者は結果を用いる", "両者とも同じ項目を用いる", "管理項目に上下の区別はない"], "correct": 0, "explanation": "一般的には、上位職者は結果系の管理項目、下位職者は要因系（点検項目）を用いることがあるとされています。"}, {"category": "工程（プロセス）", "question": "工程における「5M」とは4Mに何を加えたものか。", "choices": ["計測（Measurement）", "市場（Market）", "予算（Money）", "経営（Management）"], "correct": 0, "explanation": "4M（人・機械設備・原材料・方法）に計測（Measurement）を加えたものを5Mといいます。"}, {"category": "工程（プロセス）", "question": "工程が「異常である」と判断される際に関連する2種類の原因として正しい組合せはどれか。", "choices": ["偶然原因と突き止められる原因（異常原因）", "計量原因と計数原因", "標準原因と規格原因", "内部原因と外部原因"], "correct": 0, "explanation": "工程の変動には、取り除くことが困難な偶然原因と、突き止めて取り除くべき原因（見逃せない原因、異常原因）があります。"}, {"category": "工程（プロセス）", "question": "突き止められる原因（異常原因）が工程に存在する場合、管理図上でどのような兆候が現れるか。", "choices": ["点が管理限界線の外に出たり、並び方にくせが現れたりする", "何の変化も現れない", "データ数が減少する", "規格が変更される"], "correct": 0, "explanation": "突き止められる原因が存在する場合、管理図で点が管理限界線の外に出たり、並び方や散らばり方にくせが現れたりします。"}, {"category": "検査", "question": "以前は「不適合品」を何と呼んでいたか。", "choices": ["不良品", "合格品", "標準品", "規格品"], "correct": 0, "explanation": "以前は不適合品を不良品と呼んでいましたが、規定要求事項を満たさないことを意味する「不適合」と、用途を満たさないことを意味する「不良」を使い分けるようになりました。"}, {"category": "検査", "question": "検査と計測・試験の違いとして正しいものはどれか。", "choices": ["検査は判定という機能をもつ点が計測・試験と異なる", "検査は判定を行わない", "計測・試験は判定を行う", "両者に違いはない"], "correct": 0, "explanation": "計測や試験は単にデータをとるだけですが、検査は計測・試験に加えて判定という機能をもっている点が大きく異なります。"}, {"category": "検査", "question": "ロットの合否判定で用いられる「まとまりとしての基準」の考え方として正しいものはどれか。", "choices": ["あらかじめ定めた基準を満たしていれば合格、満たしていなければ不合格とする", "常に全数を個別判定する", "合格・不合格の概念はロットには使わない", "規格は個々の製品にのみ適用される"], "correct": 0, "explanation": "複数集まった一つのまとまり（ロット）に対しては、あらかじめ定めた基準を満たすかどうかで合格・不合格を判定します。"}, {"category": "企業活動の基本｜企業生活のマナー・規則", "question": "職場のルールを明文化したものとして本文に挙げられているものはどれか。", "choices": ["就業規則や安全衛生規則", "QC七つ道具", "5W1H", "パレート図"], "correct": 0, "explanation": "組織を円滑に運営するため決められたルールを明文化したものが就業規則や安全衛生規則です。"}, {"category": "企業活動の基本｜企業生活のマナー・規則", "question": "明文化されていなくても社会人として職場生活を営むうえで守らなければならない、人間関係を円滑にするための暗黙の了解を何というか。", "choices": ["マナー", "規格", "標準", "検査基準"], "correct": 0, "explanation": "就業規則などのように明文化されていなくても、社会人として守るべき暗黙の了解のようなものをマナーといいます。"}, {"category": "企業活動の基本｜企業生活のマナー・規則", "question": "就業規則などのルールについて、各職場の内容についての本文の説明として正しいものはどれか。", "choices": ["各職場によってその内容は独自・固有なものになっている", "全ての職場で完全に同一である", "国が一律に定めている", "存在しない場合が多い"], "correct": 0, "explanation": "就業規則や安全衛生規則は、各職場によってその内容が独自・固有なものになっているとされています。"}, {"category": "用語解説（総復習）", "question": "苦情の定義に含まれる、不満を表明する相手として本文が挙げているのはどれか。", "choices": ["供給者又は供給者に影響を及ぼすことのできる第三者", "常に消費者庁のみ", "常にマスメディアのみ", "常に裁判所のみ"], "correct": 0, "explanation": "苦情は、供給者又は供給者に影響を及ぼすことのできる第三者へ表明した不満と定義されています。"}, {"category": "用語解説（総復習）", "question": "苦情の対象となるニーズに含まれるものとして本文が挙げているものはどれか。", "choices": ["カタログ等で明示された機能・性能だけでなく、暗示的に期待される安全性なども含まれる", "明示された機能・性能のみに限られる", "価格のみに関するもの", "広告のみに関するもの"], "correct": 0, "explanation": "苦情の対象となるニーズには、明示された機能・性能だけでなく、安全性のように暗示的に期待されるものも含まれます。"}, {"category": "企業活動の基本｜製品とサービス・QCD＋PSME", "question": "職場における「総合的な品質」として本文がQCDに加えて挙げている要素の組合せはどれか。", "choices": ["生産性、安全、士気・倫理、環境", "広告、販売、物流、財務", "人事、経理、総務、法務", "研究、開発、設計、製造のみ"], "correct": 0, "explanation": "職場でのものづくりでは、QCDに加えて生産性（P）、安全（S）、士気・倫理（M）、環境（E）を含めたQCD+PSMEが重視されます。"}, {"category": "企業活動の基本｜製品とサービス・QCD＋PSME", "question": "QCD+PSMEにおける管理項目の例として、Dの分類に該当するものはどれか。", "choices": ["納期の達成状況、在庫の推移", "事故の発生件数", "欠勤率", "二酸化炭素の排出量"], "correct": 0, "explanation": "D（量・納期）の管理項目の例として、納期の達成状況や在庫の推移が挙げられています。"}, {"category": "標準・標準化", "question": "「色々な標準」として国際規格に該当するものはどれか。", "choices": ["ISOやIECの規格", "JISのみ", "社内規格のみ", "部門内ルールのみ"], "correct": 0, "explanation": "国際規格には、ISO（国際標準化機構）やIEC（国際電気標準会議）の規格などがあります。"}, {"category": "標準・標準化", "question": "「色々な標準」として国家規格に該当するものはどれか。", "choices": ["日本産業規格（JIS）", "ISO", "IEC", "国連規格"], "correct": 0, "explanation": "日本産業規格（JIS）は、日本の国家規格として産業標準化法に基づいて制定されています。"}, {"category": "事実に基づく判断", "question": "データのとり方において、母集団の姿を正しくとらえるために必要なこととして本文が述べているのはどれか。", "choices": ["偏りなくランダム（無作為）にサンプルをとること", "できるだけ多くのサンプルを同じ場所からとること", "サンプルは常に1個でよいこと", "サンプリングは不要であること"], "correct": 0, "explanation": "サンプルは母集団の姿をできる限り反映していなければならず、偏りなくランダムにサンプルをとる必要があります。"}, {"category": "事実に基づく判断", "question": "「ロット」の説明として正しいものはどれか。", "choices": ["等しい条件下で生産され、又は生産されたと思われる品物の集まり", "検査に使う器具のこと", "標準の一種のこと", "規格の一種のこと"], "correct": 0, "explanation": "ロットは、等しい条件下で生産され、又は生産されたと思われる品物の集まりです。"}, {"category": "QC七つ道具｜総論", "question": "QC七つ道具を選ぶ際の考え方として正しいものはどれか。", "choices": ["解析の目的に合ったQC七つ道具を適宜選択すること", "常に全ての手法を同時に使うこと", "最も複雑な手法だけを使うこと", "データが少ない場合は何も使わないこと"], "correct": 0, "explanation": "サンプルから得られたデータについて、解析の目的に合ったQC七つ道具を適宜選択することが必要です。"}, {"category": "QC七つ道具｜総論", "question": "QC七つ道具を用いる際、得られたデータを図や表にまとめた後にすべきこととして本文が述べているのはどれか。", "choices": ["「何が言えるか」を考え、自分なりの意見をまとめること", "そのまま放置してよいこと", "すぐに別の手法に切り替えること", "データを破棄すること"], "correct": 0, "explanation": "図や表にまとめて終わりにするのではなく、そこから「何が言えるか」を考えることが大切だとされています。"}, {"category": "QC七つ道具｜グラフ・管理図", "question": "グラフの説明として正しいものはどれか。", "choices": ["データの大きさを図形で表し、視覚に訴えたり変化を示したりして理解しやすくした図", "検査結果のみを記録する表のこと", "標準の一種のこと", "規格の一種のこと"], "correct": 0, "explanation": "グラフは、データの大きさを図形で表し、視覚に訴えたり、変化を示したりして理解しやすくした図です。"}, {"category": "QC七つ道具｜グラフ・管理図", "question": "グラフを選択する際に大切なこととして本文が述べているのはどれか。", "choices": ["何を訴えたいか、何に注目したいかを考えて目的に適したグラフを選ぶこと", "常に円グラフを使うこと", "色を統一すること", "タイトルは不要であること"], "correct": 0, "explanation": "何を訴えたいか、何に注目したいかを考えて、目的に適したグラフを選択することが大切だとされています。"}, {"category": "QC七つ道具｜チェックシート", "question": "チェックシートを作成する際に考えるべきこととして本文が挙げているものはどれか。", "choices": ["どのようなデータが欲しいか、どのような形式が取りやすいかをよく考えること", "できるだけ複雑な様式にすること", "項目は1つだけにすること", "記録者を限定しないこと"], "correct": 0, "explanation": "チェックシートを作るときは、欲しいデータやとるべきデータ、とりやすい形式などをよく考えて作成することが大切です。"}, {"category": "QC七つ道具｜層別", "question": "層別を行う際、目的とする特性に関して層の設定で重視すべきことは何か。", "choices": ["層内がより均一になるように設定すること", "層の数を最大化すること", "層ごとにデータ数を変えないこと", "層別を避けること"], "correct": 0, "explanation": "層別では、目的とする特性に関して層内がより均一になるように層を設定することが大切です。"}, {"category": "QC七つ道具｜特性要因図", "question": "特性要因図の説明としてJISの定義に近いものはどれか。", "choices": ["特定の結果（特性）と要因との関係を系統的に表した図", "時間の経過を示す図", "内訳の構成比率を示す図", "累積和を示す図"], "correct": 0, "explanation": "特性要因図は「特定の結果（特性）と要因との関係を系統的に表した図」と定義されています。"}, {"category": "改善", "question": "「ムリ」が引き起こす問題として本文が述べているのはどれか。", "choices": ["働く人の疲れが出るなどして品質に関する問題を起こす", "品質のばらつきを直接生み出す", "コストを直接高くする", "納期を直接短縮する"], "correct": 0, "explanation": "仕事の進め方や日程にムリがあると、働く人の疲れが出たりして品質に関して問題を起こすとされています。"}, {"category": "改善", "question": "「ムラ」が引き起こす問題として本文が述べているのはどれか。", "choices": ["品質のばらつきを生み出す", "働く人の疲れを直接生む", "コストを直接高くする", "納期を直接短縮する"], "correct": 0, "explanation": "ムラのある仕事は、品質のばらつきを生み出すとされています。"}, {"category": "改善", "question": "「ムダ」が引き起こす問題として本文が述べているのはどれか。", "choices": ["手直しや廃棄によりコストを高くする原因となる", "品質のばらつきを直接生み出す", "働く人の疲れを直接生む", "納期を直接短縮する"], "correct": 0, "explanation": "ムダの多い仕事や品質の悪い製品の手直しや廃棄などは、コストを高くする原因となるとされています。"}, {"category": "標準・標準化", "question": "標準化の説明として正しいものはどれか。", "choices": ["課せられた業務を効率よく遂行するため、最も合理的と思える方法に統一し全員が守っていくこと", "品質を検査すること", "従業員を人事評価すること", "広告を作成すること"], "correct": 0, "explanation": "標準化とは、業務を効率よく遂行するため、その時点で最も合理的と思える方法（ルール）に統一し、それを全員が守っていくことです。"}, {"category": "標準・標準化", "question": "品物の基本構造や品質を確保するために定められた標準を特に何と呼ぶことがあるか。", "choices": ["規格", "マナー", "苦情", "検査"], "correct": 0, "explanation": "規格には、製品の基本構造を定める部品規格・設計規格・製図規格や、品質確保のための材料規格などがあります。"}, {"category": "標準・標準化", "question": "業務に関する標準の例として適切なものはどれか。", "choices": ["作業手順や仕事の進め方のルール", "製品の材質のみ", "製品の色のみ", "製品の重量のみ"], "correct": 0, "explanation": "標準には、業務の手順・方法などの「業務に関する標準」と、部品規格などの「品物に関する標準（規格）」の両方が含まれます。"}, {"category": "標準・標準化", "question": "標準化によって得られる効果として正しいものはどれか。", "choices": ["相互理解・コミュニケーションの促進や品質の確保", "従業員数の増加", "広告費の増加", "検査の完全な廃止"], "correct": 0, "explanation": "標準化により、相互理解・コミュニケーションの促進、品質の確保、使いやすさの向上、生産性の向上などが進むとされています。"}, {"category": "事実に基づく判断", "question": "「異常値（外れ値）」に注意が必要な理由として適切なものはどれか。", "choices": ["測定の誤りや、異なる母集団のデータが混入している可能性を示すことがあるため", "平均が必ず変わらないため", "検査が不要になるため", "標準が自動的に変わるため"], "correct": 0, "explanation": "異常値は、他と著しくかけ離れた観測値で、測定の誤りや異なる母集団からのデータ混入を示す可能性があるため注意が必要です。"}, {"category": "事実に基づく判断", "question": "データを収集・分析する際、まず大切なこととして本文が述べているのはどれか。", "choices": ["事実を観測値やデータとして正しく把握すること", "感覚や勘だけで判断すること", "データを集めずに結論を出すこと", "広告の効果を測定すること"], "correct": 0, "explanation": "品質管理では、事実を観測値やデータとして正しく把握し、客観的な判断を下すことが大切だとされています。"}, {"category": "計算問題", "question": "データ 5, 10, 15 の平均はいくつか。", "choices": ["5", "10", "15", "30"], "correct": 1, "explanation": "平均＝(5+10+15)÷3＝30÷3＝10 です。"}, {"category": "計算問題", "question": "データ 4, 4, 6, 8, 8 のメディアン（中央値）はいくつか。", "choices": ["4", "6", "7", "8"], "correct": 1, "explanation": "大きさ順に並べると4,4,6,8,8。データが5個（奇数個）なので、中央にくる値である6がメディアンです。"}, {"category": "計算問題", "question": "データ 12, 16, 19, 25 の範囲Rはいくつか。", "choices": ["7", "13", "19", "25"], "correct": 1, "explanation": "範囲R＝最大値－最小値＝25－12＝13 です。"}, {"category": "QC七つ道具｜総論", "question": "QC七つ道具のうち、数値データ（計量値・計数値）を主に扱う手法として本文が述べているのはどれか。", "choices": ["パレート図、特性要因図、ヒストグラムなどQC七つ道具全般", "新QC七つ道具全般", "財務諸表分析の手法", "広告効果測定の手法"], "correct": 0, "explanation": "QC七つ道具は、主に数値を扱うものが中心の手法で、言語データを扱う手法としては新QC七つ道具があります。"}, {"category": "企業活動の基本｜製品とサービス・QCD＋PSME", "question": "製品の一形態として本文が挙げているものはどれか。", "choices": ["サービス", "為替レート", "株価", "広告"], "correct": 0, "explanation": "製品には、ハードウェア、素材、ソフトウェア、サービス、エネルギー、情報など様々な形態があるとされています。"}];
+
+let selectedCats = new Set(); // empty = all
+let selectedCount = 30;
+let selectedOrder = 'random';
+
+let quizQueue = [];
+let currentIndex = 0;
+let liveScoreCount = 0;
+let answers = []; // {q, chosen, correct}
+let missedQueue = [];
+
+const categories = [...new Set(ALL_QUESTIONS.map(q=>q.category))];
+
+function catCount(cat){
+  return ALL_QUESTIONS.filter(q=>q.category===cat).length;
+}
+
+function renderCatChips(){
+  const wrap = document.getElementById('catChips');
+  wrap.innerHTML = '';
+  const allChip = document.createElement('div');
+  allChip.className = 'chip all selected';
+  allChip.textContent = `すべて（${ALL_QUESTIONS.length}問）`;
+  allChip.onclick = () => {
+    selectedCats.clear();
+    updateChipUI();
+    updatePoolHint();
+  };
+  wrap.appendChild(allChip);
+
+  categories.forEach(cat=>{
+    const chip = document.createElement('div');
+    chip.className = 'chip';
+    chip.dataset.cat = cat;
+    chip.innerHTML = `${cat} <span class="count">${catCount(cat)}</span>`;
+    chip.onclick = () => {
+      if(selectedCats.has(cat)){ selectedCats.delete(cat); }
+      else { selectedCats.add(cat); }
+      updateChipUI();
+      updatePoolHint();
+    };
+    wrap.appendChild(chip);
+  });
+}
+
+function updateChipUI(){
+  const allChip = document.querySelector('.chip.all');
+  allChip.classList.toggle('selected', selectedCats.size===0);
+  document.querySelectorAll('.chip:not(.all)').forEach(c=>{
+    c.classList.toggle('selected', selectedCats.has(c.dataset.cat));
+  });
+}
+
+function currentPool(){
+  if(selectedCats.size===0) return ALL_QUESTIONS;
+  return ALL_QUESTIONS.filter(q=>selectedCats.has(q.category));
+}
+
+function updatePoolHint(){
+  const pool = currentPool();
+  document.getElementById('poolHint').textContent =
+    `選択中の分野: ${pool.length}問が対象です。`;
+}
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+document.getElementById('countRow').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.opt-btn');
+  if(!btn) return;
+  document.querySelectorAll('#countRow .opt-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedCount = btn.dataset.count === 'all' ? 'all' : parseInt(btn.dataset.count,10);
+});
+
+document.getElementById('orderRow').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.opt-btn');
+  if(!btn) return;
+  document.querySelectorAll('#orderRow .opt-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedOrder = btn.dataset.order;
+});
+
+document.getElementById('startBtn').addEventListener('click', ()=>{
+  const pool = currentPool();
+  if(pool.length===0) return;
+  let list = selectedOrder==='random' ? shuffle(pool) : pool.slice().sort((a,b)=>a.category.localeCompare(b.category,'ja'));
+  const n = selectedCount==='all' ? list.length : Math.min(selectedCount, list.length);
+  quizQueue = list.slice(0, n);
+  currentIndex = 0;
+  liveScoreCount = 0;
+  answers = [];
+  showScreen('quiz');
+  renderQuestion();
+});
+
+function showScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function renderQuestion(){
+  const total = quizQueue.length;
+  const q = quizQueue[currentIndex];
+  document.getElementById('progressLabel').textContent = `${currentIndex+1} / ${total}`;
+  document.getElementById('progressFill').style.width = `${(currentIndex/total)*100}%`;
+  document.getElementById('liveScore').textContent = liveScoreCount;
+
+  document.getElementById('qCat').textContent = q.category;
+  document.getElementById('qText').textContent = q.question;
+
+  const wrap = document.getElementById('choicesWrap');
+  wrap.innerHTML = '';
+  const marks = ['ア','イ','ウ','エ'];
+  q.choices.forEach((choiceText, idx)=>{
+    const div = document.createElement('div');
+    div.className = 'choice';
+    div.innerHTML = `<span class="mark">${marks[idx]}</span><span>${choiceText}</span>`;
+    div.onclick = () => selectChoice(idx);
+    wrap.appendChild(div);
+  });
+
+  document.getElementById('feedback').classList.remove('show');
+  document.getElementById('nextBtn').style.display = 'none';
+}
+
+function selectChoice(idx){
+  const q = quizQueue[currentIndex];
+  const choiceEls = document.querySelectorAll('#choicesWrap .choice');
+  choiceEls.forEach(el=>el.classList.add('locked'));
+
+  const isCorrect = idx === q.correct;
+  choiceEls[q.correct].classList.add('correct');
+  if(!isCorrect){
+    choiceEls[idx].classList.add('wrong');
+  }
+  choiceEls.forEach((el,i)=>{
+    if(i!==q.correct && i!==idx) el.classList.add('dim');
+  });
+
+  if(isCorrect) liveScoreCount++;
+  document.getElementById('liveScore').textContent = liveScoreCount;
+
+  answers.push({ q, chosen: idx, correct: isCorrect });
+
+  const fb = document.getElementById('feedback');
+  const verdict = document.getElementById('verdict');
+  verdict.textContent = isCorrect ? '正解です' : '不正解';
+  verdict.className = 'verdict ' + (isCorrect ? 'ok' : 'ng');
+  document.getElementById('expText').textContent = q.explanation;
+  fb.classList.add('show');
+
+  const nextBtn = document.getElementById('nextBtn');
+  nextBtn.style.display = 'block';
+  nextBtn.textContent = (currentIndex === quizQueue.length-1) ? '結果を見る' : '次の問題へ';
+}
+
+document.getElementById('nextBtn').addEventListener('click', ()=>{
+  currentIndex++;
+  if(currentIndex >= quizQueue.length){
+    document.getElementById('progressFill').style.width = '100%';
+    showResult();
+  } else {
+    renderQuestion();
+  }
+});
+
+document.getElementById('quitBtn').addEventListener('click', ()=>{
+  const msg = answers.length === 0
+    ? '演習を中断してトップ画面に戻りますか？'
+    : `ここまで${answers.length}問に解答しています。中断してトップ画面に戻りますか？（この演習の記録は残りません）`;
+  showConfirmModal(msg, ()=>{
+    quizQueue = [];
+    currentIndex = 0;
+    liveScoreCount = 0;
+    answers = [];
+    showScreen('start');
+  });
+});
+
+function showConfirmModal(message, onConfirm){
+  document.getElementById('confirmMsg').textContent = message;
+  const overlay = document.getElementById('confirmModal');
+  overlay.classList.add('show');
+
+  const okBtn = document.getElementById('confirmOkBtn');
+  const cancelBtn = document.getElementById('confirmCancelBtn');
+
+  function cleanup(){
+    overlay.classList.remove('show');
+    okBtn.removeEventListener('click', onOk);
+    cancelBtn.removeEventListener('click', onCancel);
+    overlay.removeEventListener('click', onOverlayClick);
+  }
+  function onOk(){ cleanup(); onConfirm(); }
+  function onCancel(){ cleanup(); }
+  function onOverlayClick(e){ if(e.target === overlay) cleanup(); }
+
+  okBtn.addEventListener('click', onOk);
+  cancelBtn.addEventListener('click', onCancel);
+  overlay.addEventListener('click', onOverlayClick);
+}
+
+function showResult(){
+  const total = answers.length;
+  const correct = answers.filter(a=>a.correct).length;
+  const pct = Math.round((correct/total)*100);
+
+  document.getElementById('resultScore').innerHTML = `${correct}<span>/${total}</span>`;
+  document.getElementById('resultPct').textContent = `正答率 ${pct}%`;
+
+  let msg;
+  if(pct >= 90) msg = 'お見事です。この調子で他の分野にも挑戦してみましょう。';
+  else if(pct >= 70) msg = '良い出来です。間違えた問題を復習して定着させましょう。';
+  else if(pct >= 50) msg = 'もう一息です。解説を読んで、苦手な分野を重点的に復習しましょう。';
+  else msg = '基礎の見直しが効果的です。まずはテキストを読み返し、少ない問題数から再挑戦してみましょう。';
+  document.getElementById('resultMsg').textContent = msg;
+
+  // category breakdown
+  const catStats = {};
+  answers.forEach(a=>{
+    const c = a.q.category;
+    if(!catStats[c]) catStats[c] = {correct:0, total:0};
+    catStats[c].total++;
+    if(a.correct) catStats[c].correct++;
+  });
+  const bwrap = document.getElementById('catBreakdown');
+  bwrap.innerHTML = '';
+  Object.keys(catStats).sort((a,b)=>a.localeCompare(b,'ja')).forEach(cat=>{
+    const s = catStats[cat];
+    const p = Math.round((s.correct/s.total)*100);
+    const row = document.createElement('div');
+    row.className = 'cat-row';
+    row.innerHTML = `
+      <div class="name">${cat}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${p}%"></div></div>
+      <div class="frac">${s.correct}/${s.total}</div>
+    `;
+    bwrap.appendChild(row);
+  });
+
+  // review missed
+  missedQueue = answers.filter(a=>!a.correct).map(a=>a.q);
+  const reviewSection = document.getElementById('reviewSection');
+  const reviewList = document.getElementById('reviewList');
+  reviewList.innerHTML = '';
+  const marks = ['ア','イ','ウ','エ'];
+  if(missedQueue.length===0){
+    reviewSection.style.display = 'none';
+  } else {
+    reviewSection.style.display = 'block';
+    answers.filter(a=>!a.correct).forEach(a=>{
+      const div = document.createElement('div');
+      div.className = 'review-item';
+      div.innerHTML = `
+        <span class="qcat">${a.q.category}</span>
+        <div class="q">${a.q.question}</div>
+        <div class="ans-line your">あなたの解答: ${marks[a.chosen]}. ${a.q.choices[a.chosen]}</div>
+        <div class="ans-line right">正解: ${marks[a.q.correct]}. ${a.q.choices[a.q.correct]}</div>
+        <div class="exp">${a.q.explanation}</div>
+      `;
+      reviewList.appendChild(div);
+    });
+  }
+
+  document.getElementById('retryMissedBtn').style.display = missedQueue.length===0 ? 'none' : 'block';
+
+  showScreen('result');
+}
+
+document.getElementById('retryMissedBtn').addEventListener('click', ()=>{
+  quizQueue = shuffle(missedQueue);
+  currentIndex = 0;
+  liveScoreCount = 0;
+  answers = [];
+  showScreen('quiz');
+  renderQuestion();
+});
+
+document.getElementById('restartBtn').addEventListener('click', ()=>{
+  showScreen('start');
+});
+
+renderCatChips();
+updatePoolHint();
+
+/* =========================================================
+   ORIGINAL DIAGRAM GALLERY (QC七つ道具)
+   All data below is invented sample data for illustration only.
+   ========================================================= */
+const NS = 'http://www.w3.org/2000/svg';
+function svgEl(tag, attrs){
+  const el = document.createElementNS(NS, tag);
+  for(const k in attrs) el.setAttribute(k, attrs[k]);
+  return el;
+}
+function makeSVG(viewBox){
+  const svg = svgEl('svg', {viewBox, xmlns:NS});
+  return svg;
+}
+
+// 1. Pareto chart -------------------------------------------------
+function buildPareto(){
+  const labels = ['キズ','汚れ','変形','異物混入','その他'];
+  const values = [42,28,16,9,5];
+  const total = values.reduce((a,b)=>a+b,0);
+  let cum=0; const cumPct = values.map(v=>{cum+=v; return Math.round(cum/total*100);});
+  const svg = makeSVG('0 0 460 260');
+  const x0=50, x1=430, y0=210, y1=30, barGap=10;
+  const barW = (x1-x0)/labels.length - barGap;
+  const maxV = Math.max(...values);
+  // axes
+  svg.appendChild(svgEl('line',{x1:x0,y1:y0,x2:x1,y2:y0,stroke:'#8A8578','stroke-width':1}));
+  svg.appendChild(svgEl('line',{x1:x0,y1:y0,x2:x0,y2:y1,stroke:'#8A8578','stroke-width':1}));
+  svg.appendChild(svgEl('line',{x1:x1,y1:y0,x2:x1,y2:y1,stroke:'#8A8578','stroke-width':1}));
+  labels.forEach((lab,i)=>{
+    const bx = x0 + i*(barW+barGap) + barGap/2;
+    const bh = (values[i]/maxV) * (y0-y1-10);
+    const by = y0-bh;
+    const bar = svgEl('rect',{x:bx,y:by,width:barW,height:bh,fill:'#28466E',opacity:0.85,rx:2});
+    svg.appendChild(bar);
+    const t1 = svgEl('text',{x:bx+barW/2,y:by-6,'text-anchor':'middle','font-size':11,fill:'#23262B'});
+    t1.textContent = values[i];
+    svg.appendChild(t1);
+    const t2 = svgEl('text',{x:bx+barW/2,y:y0+16,'text-anchor':'middle','font-size':10,fill:'#5B5F66'});
+    t2.textContent = lab;
+    svg.appendChild(t2);
+  });
+  // cumulative line (right axis 0-100%)
+  let pts = [];
+  labels.forEach((lab,i)=>{
+    const bx = x0 + i*(barW+barGap) + barGap/2 + barW/2;
+    const py = y0 - (cumPct[i]/100)*(y0-y1-10);
+    pts.push([bx,py]);
+  });
+  const polyline = svgEl('polyline',{points:pts.map(p=>p.join(',')).join(' '),fill:'none',stroke:'#B08D2B','stroke-width':2});
+  svg.appendChild(polyline);
+  pts.forEach((p,i)=>{
+    svg.appendChild(svgEl('circle',{cx:p[0],cy:p[1],r:3.5,fill:'#B08D2B'}));
+    const t = svgEl('text',{x:p[0],y:p[1]-8,'text-anchor':'middle','font-size':10,fill:'#B08D2B'});
+    t.textContent = cumPct[i]+'%';
+    svg.appendChild(t);
+  });
+  const ytitle = svgEl('text',{x:14,y:(y0+y1)/2,'text-anchor':'middle','font-size':10,fill:'#5B5F66',transform:`rotate(-90 14 ${(y0+y1)/2})`});
+  ytitle.textContent = '件数';
+  svg.appendChild(ytitle);
+  return svg;
+}
+
+// 2. Fishbone (特性要因図) -----------------------------------------
+function buildFishbone(){
+  const svg = makeSVG('0 0 460 260');
+  const spineY=140, spineX0=50, spineX1=380;
+  svg.appendChild(svgEl('line',{x1:spineX0,y1:spineY,x2:spineX1,y2:spineY,stroke:'#23262B','stroke-width':2}));
+  svg.appendChild(svgEl('polygon',{points:`${spineX1},${spineY-8} ${spineX1+16},${spineY} ${spineX1},${spineY+8}`,fill:'#23262B'}));
+  const effect = svgEl('rect',{x:spineX1+16,y:spineY-18,width:64,height:36,fill:'#F5E7E3',stroke:'#A63A2E',rx:3});
+  svg.appendChild(effect);
+  const etxt = svgEl('text',{x:spineX1+48,y:spineY+5,'text-anchor':'middle','font-size':11,fill:'#A63A2E'});
+  etxt.textContent='不適合の発生';
+  svg.appendChild(etxt);
+
+  const bones = [
+    {label:'人', sub:['教育不足','確認不足'], side:1, x:100},
+    {label:'機械・設備', sub:['整備不良','故障'], side:-1, x:180},
+    {label:'原材料', sub:['規格外','保管不良'], side:1, x:260},
+    {label:'方法', sub:['手順不備','標準なし'], side:-1, x:330},
+  ];
+  bones.forEach(b=>{
+    const dy = b.side===1? -70: 70;
+    const bx2 = b.x + (b.side===1? 30:30);
+    svg.appendChild(svgEl('line',{x1:b.x-30,y1:spineY+dy,x2:bx2,y2:spineY,stroke:'#28466E','stroke-width':1.5}));
+    const lt = svgEl('text',{x:b.x-32,y:spineY+dy-4,'text-anchor':'end','font-size':11,fill:'#28466E','font-weight':'bold'});
+    lt.textContent=b.label;
+    svg.appendChild(lt);
+    b.sub.forEach((s,i)=>{
+      const t = b.x-30 + (i+1)*18*b.side*-1;
+      const frac = 0.35+i*0.3;
+      const sx = b.x-30 + (bx2-(b.x-30))*frac;
+      const sy = spineY+dy + (spineY-(spineY+dy))*frac;
+      const subx = sx - 14, suby = sy + (b.side===1? -14: 14);
+      svg.appendChild(svgEl('line',{x1:subx,y1:suby,x2:sx,y2:sy,stroke:'#9A968A','stroke-width':1}));
+      const st = svgEl('text',{x:subx-2,y:suby+(b.side===1?-2:10),'text-anchor':'end','font-size':9,fill:'#5B5F66'});
+      st.textContent=s;
+      svg.appendChild(st);
+    });
+  });
+  return svg;
+}
+
+// 3. Histogram ------------------------------------------------------
+function buildHistogram(){
+  const values = [1,3,7,13,19,16,10,5,2];
+  const svg = makeSVG('0 0 460 260');
+  const x0=50,x1=420,y0=210,y1=30;
+  const barW = (x1-x0)/values.length;
+  const maxV = Math.max(...values);
+  svg.appendChild(svgEl('line',{x1:x0,y1:y0,x2:x1,y2:y0,stroke:'#8A8578'}));
+  svg.appendChild(svgEl('line',{x1:x0,y1:y0,x2:x0,y2:y1,stroke:'#8A8578'}));
+  values.forEach((v,i)=>{
+    const bh = (v/maxV)*(y0-y1-15);
+    const bx = x0+i*barW;
+    svg.appendChild(svgEl('rect',{x:bx+1,y:y0-bh,width:barW-2,height:bh,fill:'#2D6A4F',opacity:0.8}));
+  });
+  const meanX = x0 + values.length/2*barW;
+  svg.appendChild(svgEl('line',{x1:meanX,y1:y0,x2:meanX,y2:y1,stroke:'#A63A2E','stroke-width':1.5,'stroke-dasharray':'5,4'}));
+  const mt = svgEl('text',{x:meanX,y:y1-8,'text-anchor':'middle','font-size':10,fill:'#A63A2E'});
+  mt.textContent='平均';
+  svg.appendChild(mt);
+  const xt = svgEl('text',{x:(x0+x1)/2,y:y0+22,'text-anchor':'middle','font-size':10,fill:'#5B5F66'});
+  xt.textContent='測定値の区間 →';
+  svg.appendChild(xt);
+  return svg;
+}
+
+// 4. Control chart ----------------------------------------------------
+function buildControlChart(){
+  const values = [50,52,49,53,51,55,50,48,52,54,51,58];
+  const svg = makeSVG('0 0 460 260');
+  const x0=50,x1=420,y0=210,y1=30;
+  const CL=52, UCL=58, LCL=46;
+  const yScale = v => y0 - ((v-40)/(65-40))*(y0-y1);
+  svg.appendChild(svgEl('line',{x1:x0,y1:y0,x2:x1,y2:y0,stroke:'#8A8578'}));
+  svg.appendChild(svgEl('line',{x1:x0,y1:y0,x2:x0,y2:y1,stroke:'#8A8578'}));
+  [['CL',CL,'#28466E','4,0'],['UCL',UCL,'#A63A2E','5,4'],['LCL',LCL,'#A63A2E','5,4']].forEach(([lab,v,col,dash])=>{
+    const y = yScale(v);
+    svg.appendChild(svgEl('line',{x1:x0,y1:y,x2:x1,y2:y,stroke:col,'stroke-width':1.3,'stroke-dasharray':dash}));
+    const t = svgEl('text',{x:x1+4,y:y+4,'font-size':10,fill:col});
+    t.textContent = lab;
+    svg.appendChild(t);
+  });
+  const pts = values.map((v,i)=>[x0+ (i+0.5)*((x1-x0)/values.length), yScale(v)]);
+  svg.appendChild(svgEl('polyline',{points:pts.map(p=>p.join(',')).join(' '),fill:'none',stroke:'#23262B','stroke-width':1.3}));
+  pts.forEach((p,i)=>{
+    const isOut = values[i] > UCL || values[i] < LCL;
+    svg.appendChild(svgEl('circle',{cx:p[0],cy:p[1],r:isOut?5:3.2,fill:isOut?'#A63A2E':'#23262B'}));
+  });
+  return svg;
+}
+
+// 5. Scatter plot ------------------------------------------------------
+function buildScatter(){
+  const pts = [[10,14],[15,20],[18,19],[22,27],[25,24],[28,33],[30,31],[33,38],[12,17],[20,22],[27,29],[35,40]];
+  const svg = makeSVG('0 0 460 260');
+  const x0=50,x1=420,y0=210,y1=30;
+  const xs = pts.map(p=>p[0]), ys = pts.map(p=>p[1]);
+  const xmax=Math.max(...xs)+5, ymax=Math.max(...ys)+5;
+  svg.appendChild(svgEl('line',{x1:x0,y1:y0,x2:x1,y2:y0,stroke:'#8A8578'}));
+  svg.appendChild(svgEl('line',{x1:x0,y1:y0,x2:x0,y2:y1,stroke:'#8A8578'}));
+  pts.forEach(p=>{
+    const px = x0 + (p[0]/xmax)*(x1-x0);
+    const py = y0 - (p[1]/ymax)*(y0-y1);
+    svg.appendChild(svgEl('circle',{cx:px,cy:py,r:4,fill:'#28466E',opacity:0.75}));
+  });
+  const xt = svgEl('text',{x:(x0+x1)/2,y:y0+22,'text-anchor':'middle','font-size':10,fill:'#5B5F66'});
+  xt.textContent='添加量（x）→';
+  svg.appendChild(xt);
+  const yt = svgEl('text',{x:16,y:(y0+y1)/2,'text-anchor':'middle','font-size':10,fill:'#5B5F66',transform:`rotate(-90 16 ${(y0+y1)/2})`});
+  yt.textContent='生産量（y）';
+  svg.appendChild(yt);
+  return svg;
+}
+
+// 6. Checksheet ---------------------------------------------------------
+function buildChecksheet(){
+  const svg = makeSVG('0 0 460 220');
+  const cols = ['月','火','水','木','金'];
+  const rows = ['傷','汚れ','変形'];
+  const x0=90,y0=40,cw=64,rh=36;
+  cols.forEach((c,i)=>{
+    const t = svgEl('text',{x:x0+i*cw+cw/2,y:y0-10,'text-anchor':'middle','font-size':11,fill:'#23262B','font-weight':'bold'});
+    t.textContent=c; svg.appendChild(t);
+  });
+  rows.forEach((r,ri)=>{
+    const t = svgEl('text',{x:x0-10,y:y0+ri*rh+rh/2+4,'text-anchor':'end','font-size':11,fill:'#23262B','font-weight':'bold'});
+    t.textContent=r; svg.appendChild(t);
+  });
+  for(let r=0;r<=rows.length;r++){
+    svg.appendChild(svgEl('line',{x1:x0,y1:y0+r*rh,x2:x0+cols.length*cw,y2:y0+r*rh,stroke:'#D8D4C6'}));
+  }
+  for(let c=0;c<=cols.length;c++){
+    svg.appendChild(svgEl('line',{x1:x0+c*cw,y1:y0,x2:x0+c*cw,y2:y0+rows.length*rh,stroke:'#D8D4C6'}));
+  }
+  const marks = [
+    [2,1],[1,3],[3,0],[0,2],[2,3],[1,0],[3,2],[0,0],[2,0],[1,1],[3,1],[0,4]
+  ];
+  marks.forEach(([ri,ci])=>{
+    const cx = x0+ci*cw+cw/2, cy=y0+ri*rh+rh/2;
+    const t = svgEl('text',{x:cx,y:cy+5,'text-anchor':'middle','font-size':13,fill:'#2D6A4F'});
+    t.textContent='✓';
+    svg.appendChild(t);
+  });
+  return svg;
+}
+
+// 7. Stratification (層別) ------------------------------------------------
+function buildStratification(){
+  const svg = makeSVG('0 0 460 260');
+  const before = [2,6,14,20,15,9,3];
+  const groupA = [1,5,12,9,3,1,0];
+  const groupB = [1,1,2,11,12,8,3];
+  function drawHist(vals, x0, y0, width, color, label){
+    const barW = width/vals.length;
+    const maxV = Math.max(...before);
+    const g = svgEl('g',{});
+    vals.forEach((v,i)=>{
+      const bh = (v/maxV)*90;
+      g.appendChild(svgEl('rect',{x:x0+i*barW+1,y:y0-bh,width:barW-2,height:bh,fill:color,opacity:0.85}));
+    });
+    const t = svgEl('text',{x:x0+width/2,y:y0+18,'text-anchor':'middle','font-size':11,fill:'#23262B'});
+    t.textContent = label;
+    g.appendChild(t);
+    svg.appendChild(g);
+  }
+  drawHist(before, 40, 120, 160, '#5B5F66', '層別前（全体）');
+  drawHist(groupA, 250, 120, 75, '#28466E', '作業者A');
+  drawHist(groupB, 340, 120, 75, '#A63A2E', '作業者B');
+  const arrow = svgEl('text',{x:220,y:80,'text-anchor':'middle','font-size':16,fill:'#B08D2B'});
+  arrow.textContent='⇒ 層別';
+  svg.appendChild(arrow);
+  return svg;
+}
+
+const DIAGRAMS = [
+  {title:'① パレート図', sub:'不適合項目別の件数と累積比率（例）', build:buildPareto,
+   note:'項目を件数の多い順に並べ、棒グラフと累積折れ線を組み合わせます。上位2項目で全体の70%を占めており、ここが改善の重点対象になります（重点指向）。'},
+  {title:'② 特性要因図（魚の骨図）', sub:'「不適合の発生」という結果に対する要因の整理（例）', build:buildFishbone,
+   note:'背骨の先に結果（特性）を置き、4M（人・機械設備・原材料・方法）ごとに大骨を伸ばして要因を洗い出します。'},
+  {title:'③ ヒストグラム', sub:'測定値の分布（一般形の例）', build:buildHistogram,
+   note:'区間ごとの度数を棒の高さで表し、分布の中心的傾向とばらつきの形を視覚的につかめます。この例は左右対称の「一般形」です。'},
+  {title:'④ 管理図', sub:'CL・UCL・LCLと打点の例', build:buildControlChart,
+   note:'中心線（CL）と上下の管理限界線（UCL・LCL）を引き、データを時間順に打点します。限界線から飛び出た点（赤）は工程異常の疑いを示します。'},
+  {title:'⑤ 散布図', sub:'二つの特性の関係（正の相関の例）', build:buildScatter,
+   note:'横軸と縦軸に対になる二つの特性をとり、観測値を打点します。この例は右上がりの傾向があり「正の相関」を示しています。'},
+  {title:'⑥ チェックシート', sub:'記録・調査用チェックシートの例', build:buildChecksheet,
+   note:'あらかじめ項目を印刷しておき、✓マークなどで簡単にデータを記録できるようにした表です。'},
+  {title:'⑦ 層別', sub:'全体のデータを作業者ごとに分けた例', build:buildStratification,
+   note:'全体では分布の形がはっきりしなくても、条件（この例では作業者）ごとに層別すると、それぞれの傾向の違いが見えてきます。'},
+];
+
+function renderGallery(){
+  const wrap = document.getElementById('galleryList');
+  if(wrap.dataset.rendered) return;
+  DIAGRAMS.forEach(d=>{
+    const card = document.createElement('div');
+    card.className = 'diagram-card';
+    card.innerHTML = `<h3>${d.title}</h3><div class="sub">${d.sub}</div>`;
+    card.appendChild(d.build());
+    const note = document.createElement('p');
+    note.className = 'note';
+    note.textContent = d.note;
+    card.appendChild(note);
+    wrap.appendChild(card);
+  });
+  wrap.dataset.rendered = '1';
+}
+
+document.getElementById('galleryLink').addEventListener('click', ()=>{
+  renderGallery();
+  showScreen('gallery');
+});
+document.getElementById('galleryBack').addEventListener('click', ()=>{
+  showScreen('start');
+});
+</script>
+</body>
+</html>
